@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "app-turismo",
-    "slug": "app-turismo",
+    "name": "Tryple",
+    "slug": "travel-discovery-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
