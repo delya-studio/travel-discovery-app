@@ -6,7 +6,9 @@ import TripsScreen from "../screens/TripsScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
-const Tab = createBottomTabNavigator();
+import { MainTabParamList } from "../types/navigation";
+
+const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainTabNavigator() {
   return (
