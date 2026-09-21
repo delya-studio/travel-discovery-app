@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
+  Alert,
   Image,
   Modal,
   ScrollView,
@@ -23,7 +24,9 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { RootStackParamList } from "../types/navigation";
 import { touristSpots } from "../data/touristSpots";
 import { destinations } from "../data/destinations";
-import { trips } from "../data/trips";
+import { Trip } from "../types/trip";
+import { getTrips, createTrip, updateTrip } from "../data/trips";
+import { getLoggedUser } from "../data/auth";
 
 type touristSpotRouteProp = RouteProp<RootStackParamList, "TouristSpot">;
 
@@ -37,6 +40,7 @@ export default function TouristSpotScreen() {
 
   const [isTripModalVisible, setIsTripModalVisible] = useState(false);
   const [isCreatingTrip, setIsCreatingTrip] = useState(false);
+  const [userTrips, setUserTrips] = useState<Trip[]>([]);
 
   const [newTripName, setNewTripName] = useState("");
   const [newTripStartDate, setNewTripStartDate] = useState("");
@@ -44,9 +48,61 @@ export default function TouristSpotScreen() {
 
   const touristSpot = touristSpots.find((spot) => spot.id === touristSpotId);
 
-  const [isFavorite, setIsFavorite] = useState(
-    isTouristSpotFavorite(touristSpotId),
-  );
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const loadFavorite = async () => {
+      const favorite = await isTouristSpotFavorite(touristSpotId);
+
+      setIsFavorite(favorite);
+    };
+
+    loadFavorite();
+  }, [touristSpotId]);
+
+  useEffect(() => {
+    const loadTrips = async () => {
+      const storedTrips = await getTrips();
+      setUserTrips(storedTrips);
+    };
+
+    loadTrips();
+  }, [isTripModalVisible]);
+
+  const handleFavorite = async () => {
+    const result = await toggleFavoriteTouristSpot(touristSpotId);
+
+    if (result === null) {
+      Alert.alert(
+        "Entre para salvar",
+        "Crie uma conta ou entre para salvar pontos turísticos nos seus favoritos.",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Entrar",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "login",
+              }),
+          },
+          {
+            text: "Criar conta",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "register",
+              }),
+          },
+        ],
+      );
+
+      return;
+    }
+
+    setIsFavorite(result);
+  };
 
   if (!touristSpot) {
     return (
@@ -72,6 +128,41 @@ export default function TouristSpotScreen() {
     }
 
     return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4)}`;
+  };
+
+  const handleAddToTrip = async () => {
+    const user = await getLoggedUser();
+
+    if (!user) {
+      Alert.alert(
+        "Entre para criar uma viagem",
+        "Crie uma conta ou entre para adicionar pontos turísticos às suas viagens.",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Entrar",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "login",
+              }),
+          },
+          {
+            text: "Criar conta",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "register",
+              }),
+          },
+        ],
+      );
+
+      return;
+    }
+
+    setIsTripModalVisible(true);
   };
 
   return (
@@ -184,18 +275,14 @@ export default function TouristSpotScreen() {
       <View style={styles.bottomBar}>
         <TouchableOpacity
           style={styles.addToTripButton}
-          onPress={() => setIsTripModalVisible(true)}
+          onPress={handleAddToTrip}
         >
           <Text style={styles.addToTripText}>+ Adicionar à viagem</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.favoriteButton}
-          onPress={() => {
-            const newValue = toggleFavoriteTouristSpot(touristSpot.id);
-
-            setIsFavorite(newValue);
-          }}
+          onPress={handleFavorite}
         >
           <Text style={styles.favoriteIcon}>{isFavorite ? "♥" : "♡"}</Text>
         </TouchableOpacity>
@@ -248,14 +335,14 @@ export default function TouristSpotScreen() {
 
                 <TouchableOpacity
                   style={styles.createTripButton}
-                  onPress={() => {
+                  onPress={async () => {
                     const name = newTripName.trim();
 
                     if (!name || !newTripStartDate || !newTripEndDate) {
                       return;
                     }
 
-                    const newTrip = {
+                    const newTrip: Trip = {
                       id: Date.now().toString(),
                       name,
                       destinationId: touristSpot.destinationId,
@@ -263,13 +350,15 @@ export default function TouristSpotScreen() {
                       endDate: newTripEndDate,
                       items: [
                         {
-                          id: Date.now().toString(),
+                          id: `${Date.now()}-${touristSpot.id}`,
                           touristSpotId: touristSpot.id,
                         },
                       ],
                     };
 
-                    trips.push(newTrip);
+                    await createTrip(newTrip);
+
+                    setUserTrips((currentTrips) => [...currentTrips, newTrip]);
 
                     setNewTripName("");
                     setNewTripStartDate("");
@@ -295,7 +384,7 @@ export default function TouristSpotScreen() {
               </>
             ) : (
               <>
-                {trips.map((trip) => {
+                {userTrips.map((trip: Trip) => {
                   const alreadyAdded = trip.items.some(
                     (item) => item.touristSpotId === touristSpot.id,
                   );
@@ -305,13 +394,29 @@ export default function TouristSpotScreen() {
                       key={trip.id}
                       style={styles.tripOption}
                       disabled={alreadyAdded}
-                      onPress={() => {
-                        if (!alreadyAdded) {
-                          trip.items.push({
-                            id: Date.now().toString(),
-                            touristSpotId: touristSpot.id,
-                          });
+                      onPress={async () => {
+                        if (alreadyAdded) {
+                          return;
                         }
+
+                        const updatedTrip: Trip = {
+                          ...trip,
+                          items: [
+                            ...trip.items,
+                            {
+                              id: `${trip.id}-${touristSpot.id}-${Date.now()}`,
+                              touristSpotId: touristSpot.id,
+                            },
+                          ],
+                        };
+
+                        await updateTrip(updatedTrip);
+
+                        setUserTrips((currentTrips) =>
+                          currentTrips.map((item) =>
+                            item.id === updatedTrip.id ? updatedTrip : item,
+                          ),
+                        );
 
                         setIsTripModalVisible(false);
                       }}
@@ -321,7 +426,9 @@ export default function TouristSpotScreen() {
                       <Text style={styles.tripOptionStatus}>
                         {alreadyAdded
                           ? "Já adicionado"
-                          : `${trip.items.length} ponto${trip.items.length === 1 ? "" : "s"}`}
+                          : `${trip.items.length} ponto${
+                              trip.items.length === 1 ? "" : "s"
+                            }`}
                       </Text>
                     </TouchableOpacity>
                   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Alert,
   Image,
@@ -11,11 +11,17 @@ import {
   View,
 } from "react-native";
 
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { RootStackParamList } from "../types/navigation";
-import { trips } from "../data/trips";
+import { getTrips, updateTrip, deleteTrip as removeTrip } from "../data/trips";
+import { Trip } from "../types/trip";
 import { touristSpots } from "../data/touristSpots";
 
 type TripDetailsRouteProp = RouteProp<RootStackParamList, "TripDetails">;
@@ -57,9 +63,21 @@ export default function TripDetailsScreen() {
 
   const { tripId } = route.params;
 
-  const trip = trips.find((item) => item.id === tripId);
+  const [trip, setTrip] = useState<Trip | null>(null);
 
-  const [, setRefresh] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      const loadTrip = async () => {
+        const storedTrips = await getTrips();
+
+        const foundTrip = storedTrips.find((item) => item.id === tripId);
+
+        setTrip(foundTrip || null);
+      };
+
+      loadTrip();
+    }, [tripId]),
+  );
 
   const [selectedDay, setSelectedDay] = useState(0);
 
@@ -92,11 +110,11 @@ export default function TripDetailsScreen() {
 
   const unplannedItems = trip.items.filter((item) => !item.date);
 
-  const refresh = () => {
-    setRefresh((value) => value + 1);
-  };
+  const addSpotToCurrentDay = async (touristSpotId: string) => {
+    if (!trip) {
+      return;
+    }
 
-  const addSpotToCurrentDay = (touristSpotId: string) => {
     const alreadyAdded = trip.items.some(
       (item) => item.touristSpotId === touristSpotId,
     );
@@ -105,14 +123,22 @@ export default function TripDetailsScreen() {
       return;
     }
 
-    trip.items.push({
-      id: Date.now().toString(),
-      touristSpotId,
-      date: currentDate,
-    });
+    const updatedTrip: Trip = {
+      ...trip,
+      items: [
+        ...trip.items,
+        {
+          id: Date.now().toString(),
+          touristSpotId,
+          date: currentDate,
+        },
+      ],
+    };
 
+    await updateTrip(updatedTrip);
+
+    setTrip(updatedTrip);
     setIsAddModalVisible(false);
-    refresh();
   };
 
   const openDaySelector = (itemId: string) => {
@@ -120,23 +146,43 @@ export default function TripDetailsScreen() {
     setIsDayModalVisible(true);
   };
 
-  const assignItemToDay = (date: string) => {
-    const item = trip.items.find((tripItem) => tripItem.id === selectedItemId);
-
-    if (item) {
-      item.date = date;
+  const assignItemToDay = async (date: string) => {
+    if (!trip || !selectedItemId) {
+      return;
     }
 
+    const updatedTrip: Trip = {
+      ...trip,
+      items: trip.items.map((item) =>
+        item.id === selectedItemId
+          ? {
+              ...item,
+              date,
+            }
+          : item,
+      ),
+    };
+
+    await updateTrip(updatedTrip);
+
+    setTrip(updatedTrip);
     setSelectedItemId(null);
     setIsDayModalVisible(false);
-
-    refresh();
   };
 
-  const removeItem = (itemId: string) => {
-    trip.items = trip.items.filter((item) => item.id !== itemId);
+  const removeItem = async (itemId: string) => {
+    if (!trip) {
+      return;
+    }
 
-    refresh();
+    const updatedTrip: Trip = {
+      ...trip,
+      items: trip.items.filter((item) => item.id !== itemId),
+    };
+
+    await updateTrip(updatedTrip);
+
+    setTrip(updatedTrip);
   };
 
   const formatInputDate = (value: string) => {
@@ -160,8 +206,9 @@ export default function TripDetailsScreen() {
     setIsEditModalVisible(true);
   };
 
-  const saveTripChanges = () => {
+  const saveTripChanges = async () => {
     if (
+      !trip ||
       !editTripName.trim() ||
       editStartDate.length !== 10 ||
       editEndDate.length !== 10
@@ -169,16 +216,25 @@ export default function TripDetailsScreen() {
       return;
     }
 
-    trip.name = editTripName.trim();
-    trip.startDate = editStartDate;
-    trip.endDate = editEndDate;
+    const updatedTrip: Trip = {
+      ...trip,
+      name: editTripName.trim(),
+      startDate: editStartDate,
+      endDate: editEndDate,
+    };
 
+    await updateTrip(updatedTrip);
+
+    setTrip(updatedTrip);
     setIsEditModalVisible(false);
     setSelectedDay(0);
-    refresh();
   };
 
   const deleteTrip = () => {
+    if (!trip) {
+      return;
+    }
+
     Alert.alert(
       "Excluir viagem",
       `Tem certeza que deseja excluir "${trip.name}"? Esta ação não pode ser desfeita.`,
@@ -190,12 +246,8 @@ export default function TripDetailsScreen() {
         {
           text: "Excluir",
           style: "destructive",
-          onPress: () => {
-            const index = trips.findIndex((item) => item.id === trip.id);
-
-            if (index !== -1) {
-              trips.splice(index, 1);
-            }
+          onPress: async () => {
+            await removeTrip(trip.id);
 
             navigation.goBack();
           },
@@ -203,6 +255,7 @@ export default function TripDetailsScreen() {
       ],
     );
   };
+
   return (
     <View style={styles.screen}>
       <ScrollView

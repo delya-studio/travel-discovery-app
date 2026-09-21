@@ -18,8 +18,8 @@ import { destinations } from "../data/destinations";
 import { touristSpots } from "../data/touristSpots";
 
 import {
-  favoriteDestinationIds,
-  favoriteTouristSpotIds,
+  getFavoriteDestinationIds,
+  getFavoriteTouristSpotIds,
 } from "../data/favorites";
 
 export default function FavoritesScreen() {
@@ -28,9 +28,26 @@ export default function FavoritesScreen() {
 
   const [, setRefresh] = useState(0);
 
+  const [favoriteDestinationIds, setFavoriteDestinationIds] = useState<
+    string[]
+  >([]);
+
+  const [favoriteTouristSpotIds, setFavoriteTouristSpotIds] = useState<
+    string[]
+  >([]);
+
   useFocusEffect(
     useCallback(() => {
-      setRefresh((value) => value + 1);
+      const loadFavorites = async () => {
+        const destinationIds = await getFavoriteDestinationIds();
+
+        const touristSpotIds = await getFavoriteTouristSpotIds();
+
+        setFavoriteDestinationIds(destinationIds);
+        setFavoriteTouristSpotIds(touristSpotIds);
+      };
+
+      loadFavorites();
     }, []),
   );
 

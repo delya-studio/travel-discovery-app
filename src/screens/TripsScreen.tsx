@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import {
+  Alert,
   Image,
   Modal,
   ScrollView,
@@ -10,25 +11,24 @@ import {
   View,
 } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useFocusEffect } from "@react-navigation/native";
 
 import { RootStackParamList } from "../types/navigation";
-import { trips } from "../data/trips";
+import { createTrip, getTrips } from "../data/trips";
 import { destinations } from "../data/destinations";
 import { touristSpots } from "../data/touristSpots";
+import { getLoggedUser } from "../data/auth";
+
+import { Trip } from "../types/trip";
 
 export default function TripsScreen() {
-  const [, setRefresh] = useState(0);
-
-  useFocusEffect(
-    useCallback(() => {
-      setRefresh((value) => value + 1);
-    }, []),
-  );
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const [user, setUser] = useState<any>(null);
+  const [tripList, setTripList] = useState<Trip[]>([]);
 
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
@@ -36,6 +36,27 @@ export default function TripsScreen() {
   const [newTripDestinationId, setNewTripDestinationId] = useState("");
   const [newTripStartDate, setNewTripStartDate] = useState("");
   const [newTripEndDate, setNewTripEndDate] = useState("");
+
+  const loadTrips = async () => {
+    const loggedUser = await getLoggedUser();
+
+    setUser(loggedUser);
+
+    if (!loggedUser) {
+      setTripList([]);
+      return;
+    }
+
+    const storedTrips = await getTrips();
+
+    setTripList(storedTrips);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTrips();
+    }, []),
+  );
 
   const formatInputDate = (value: string) => {
     const numbers = value.replace(/\D/g, "").slice(0, 8);
@@ -51,17 +72,55 @@ export default function TripsScreen() {
     return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4)}`;
   };
 
-  const createTrip = () => {
+  const openCreateTrip = () => {
+    if (!user) {
+      Alert.alert(
+        "Entre para criar uma viagem",
+        "Crie uma conta ou entre para começar a organizar suas viagens.",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Entrar",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "login",
+              }),
+          },
+          {
+            text: "Criar conta",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "register",
+              }),
+          },
+        ],
+      );
+
+      return;
+    }
+
+    setIsCreateModalVisible(true);
+  };
+
+  const createNewTrip = async () => {
     if (
       !newTripName.trim() ||
       !newTripDestinationId ||
       newTripStartDate.length !== 10 ||
       newTripEndDate.length !== 10
     ) {
+      Alert.alert(
+        "Preencha os dados",
+        "Informe o nome, destino e período da viagem.",
+      );
+
       return;
     }
 
-    const newTrip = {
+    const newTrip: Trip = {
       id: Date.now().toString(),
       name: newTripName.trim(),
       destinationId: newTripDestinationId,
@@ -70,7 +129,7 @@ export default function TripsScreen() {
       items: [],
     };
 
-    trips.push(newTrip);
+    await createTrip(newTrip);
 
     setNewTripName("");
     setNewTripDestinationId("");
@@ -83,12 +142,43 @@ export default function TripsScreen() {
       tripId: newTrip.id,
     });
   };
+
   return (
     <View style={styles.screen}>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Viagens</Text>
 
-        {trips.length === 0 ? (
+        {!user ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>Organize suas viagens</Text>
+
+            <Text style={styles.emptyText}>
+              Crie uma conta ou faça login para criar e salvar suas viagens.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.createTripButton}
+              onPress={() =>
+                navigation.navigate("Auth", {
+                  mode: "register",
+                })
+              }
+            >
+              <Text style={styles.createTripButtonText}>Criar conta</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() =>
+                navigation.navigate("Auth", {
+                  mode: "login",
+                })
+              }
+            >
+              <Text style={styles.loginButtonText}>Entrar</Text>
+            </TouchableOpacity>
+          </View>
+        ) : tripList.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyTitle}>
               Você ainda não tem nenhuma viagem
@@ -100,61 +190,78 @@ export default function TripsScreen() {
 
             <TouchableOpacity
               style={styles.createTripButton}
-              onPress={() => setIsCreateModalVisible(true)}
+              onPress={openCreateTrip}
             >
               <Text style={styles.createTripButtonText}>+ Criar viagem</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          trips.map((trip) => (
-            <View key={trip.id} style={styles.tripCard}>
-              <Text style={styles.tripName}> {trip.name} </Text>
+          <>
+            <TouchableOpacity
+              style={styles.createTripButton}
+              onPress={openCreateTrip}
+            >
+              <Text style={styles.createTripButtonText}>+ Criar viagem</Text>
+            </TouchableOpacity>
 
-              {trip.items.length === 0 ? (
-                <Text style={styles.emptyText}>
-                  Nenhum ponto turístico adicionado.
+            {tripList.map((trip) => (
+              <TouchableOpacity
+                key={trip.id}
+                style={styles.tripCard}
+                activeOpacity={0.85}
+                onPress={() =>
+                  navigation.navigate("TripDetails", {
+                    tripId: trip.id,
+                  })
+                }
+              >
+                <Text style={styles.tripName}>{trip.name}</Text>
+
+                <Text style={styles.tripDates}>
+                  {trip.startDate} — {trip.endDate}
                 </Text>
-              ) : (
-                <View style={styles.items}>
-                  {trip.items.map((item) => {
-                    const touristSpot = touristSpots.find(
-                      (spot) => spot.id === item.touristSpotId,
-                    );
 
-                    if (!touristSpot) {
-                      return null;
-                    }
+                {trip.items.length === 0 ? (
+                  <Text style={styles.emptyText}>
+                    Nenhum ponto turístico adicionado.
+                  </Text>
+                ) : (
+                  <View style={styles.items}>
+                    {trip.items.map((item) => {
+                      const touristSpot = touristSpots.find(
+                        (spot) => spot.id === item.touristSpotId,
+                      );
 
-                    return (
-                      <TouchableOpacity
-                        key={item.touristSpotId}
-                        style={styles.item}
-                        onPress={() =>
-                          navigation.navigate("TripDetails", {
-                            tripId: trip.id,
-                          })
-                        }
-                      >
-                        <Image
-                          source={{ uri: touristSpot.image }}
-                          style={styles.image}
-                        />
+                      if (!touristSpot) {
+                        return null;
+                      }
 
-                        <View style={styles.itemInfo}>
-                          <Text style={styles.itemName}>
-                            {touristSpot.name}
-                          </Text>
-                          <Text style={styles.itemLocation}>
-                            {touristSpot.location}
-                          </Text>
+                      return (
+                        <View key={item.id} style={styles.item}>
+                          <Image
+                            source={{
+                              uri: touristSpot.image,
+                            }}
+                            style={styles.image}
+                          />
+
+                          <View style={styles.itemInfo}>
+                            <Text style={styles.itemName}>
+                              {touristSpot.name}
+                            </Text>
+
+                            <Text style={styles.itemLocation}>
+                              {touristSpot.location}
+                            </Text>
+                          </View>
                         </View>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              )}
-            </View>
-          ))
+                      );
+                    })}
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </>
         )}
       </ScrollView>
 
@@ -235,7 +342,7 @@ export default function TripsScreen() {
               maxLength={10}
             />
 
-            <TouchableOpacity style={styles.saveButton} onPress={createTrip}>
+            <TouchableOpacity style={styles.saveButton} onPress={createNewTrip}>
               <Text style={styles.saveButtonText}>Criar viagem</Text>
             </TouchableOpacity>
 
@@ -256,6 +363,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
+
   container: {
     flex: 1,
     backgroundColor: "#EDEDED",
@@ -293,6 +401,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
     backgroundColor: "#000000",
+    alignItems: "center",
   },
 
   createTripButtonText: {
@@ -300,16 +409,34 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
+
+  loginButton: {
+    marginTop: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+  },
+
+  loginButtonText: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+
   tripCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
     padding: 18,
-    marginBottom: 20,
+    marginTop: 16,
   },
 
   tripName: {
     fontSize: 22,
     fontWeight: "700",
+  },
+
+  tripDates: {
+    marginTop: 6,
+    fontSize: 14,
+    color: "#666666",
   },
 
   items: {

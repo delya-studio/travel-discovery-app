@@ -18,6 +18,14 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   Splash: undefined;
 
+  About: undefined;
+
+  Privacy: undefined;
+
+  Auth: {
+    mode?: "login" | "register";
+  };
+
   Main: NavigatorScreenParams<MainTabParamList>;
 
   Explore: {
@@ -30,6 +38,8 @@ export type RootStackParamList = {
   TripDetails: {
     tripId: string;
   };
+
+  PersonalData: undefined;
 
   Destination: {
     destinationId: string;

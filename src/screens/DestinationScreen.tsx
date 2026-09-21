@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -39,9 +40,60 @@ export default function DestinationScreen() {
     (spot) => spot.destinationId === destinationId,
   );
 
-  const [isFavorite, setIsFavorite] = useState(
-    isDestinationFavorite(destinationId),
-  );
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const loadFavorite = async () => {
+      if (!destination) {
+        return;
+      }
+
+      const favorite = await isDestinationFavorite(destination.id);
+
+      setIsFavorite(favorite);
+    };
+
+    loadFavorite();
+  }, [destination?.id]);
+
+  const handleFavorite = async () => {
+    if (!destination) {
+      return;
+    }
+
+    const result = await toggleFavoriteDestination(destination.id);
+
+    if (result === null) {
+      Alert.alert(
+        "Entre para salvar",
+        "Crie uma conta ou entre para salvar destinos nos seus favoritos.",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Entrar",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "login",
+              }),
+          },
+          {
+            text: "Criar conta",
+            onPress: () =>
+              navigation.navigate("Auth", {
+                mode: "register",
+              }),
+          },
+        ],
+      );
+
+      return;
+    }
+
+    setIsFavorite(result);
+  };
 
   if (!destination) {
     return (
@@ -69,11 +121,7 @@ export default function DestinationScreen() {
 
         <TouchableOpacity
           style={styles.favoriteButton}
-          onPress={() => {
-            const newValue = toggleFavoriteDestination(destination.id);
-
-            setIsFavorite(newValue);
-          }}
+          onPress={handleFavorite}
         >
           <Text style={styles.favoriteIcon}>{isFavorite ? "♥" : "♡"}</Text>
         </TouchableOpacity>

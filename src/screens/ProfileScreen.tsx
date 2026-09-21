@@ -7,40 +7,71 @@ import {
   ScrollView,
 } from "react-native";
 
+import { useCallback, useState } from "react";
+
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import { RootStackParamList } from "../types/navigation";
+
+import { getLoggedUser, logoutUser } from "../data/auth";
+
+type User = {
+  name: string;
+  email: string;
+};
+
 export default function ProfileScreen() {
-    const handleAccount = () => {
-    Alert.alert(
-      "Conta Tryple",
-      "Crie uma conta ou entre para salvar suas viagens e favoritos."
-    );
-  };
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const [user, setUser] = useState<User | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadUser = async () => {
+        const loggedUser = await getLoggedUser();
+        setUser(loggedUser);
+      };
+
+      loadUser();
+    }, []),
+  );
 
   const handlePersonalData = () => {
-    Alert.alert(
-      "Dados pessoais",
-      "Essa área ficará disponível quando você criar uma conta."
-    );
+    if (!user) {
+      Alert.alert(
+        "Dados pessoais",
+        "Entre ou crie uma conta para acessar seus dados pessoais.",
+      );
+      return;
+    }
+
+    navigation.navigate("PersonalData");
   };
 
   const handlePreferences = () => {
     Alert.alert(
       "Preferências",
-      "As opções de personalização do Tryple serão adicionadas aqui."
+      "As opções de personalização do Tryple serão adicionadas aqui.",
     );
   };
 
-  const handleAbout = () => {
-    Alert.alert(
-      "Sobre o Tryple",
-      "O Tryple ajuda você a descobrir destinos, encontrar pontos turísticos e organizar suas viagens em um só lugar."
-    );
-  };
-
-  const handlePrivacy = () => {
-    Alert.alert(
-      "Política de privacidade",
-      "As informações sobre privacidade e tratamento de dados serão apresentadas aqui."
-    );
+  const handleLogout = () => {
+    Alert.alert("Sair da conta", "Tem certeza que deseja sair da sua conta?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Sair",
+        style: "destructive",
+        onPress: async () => {
+          await logoutUser();
+          setUser(null);
+        },
+      },
+    ]);
   };
 
   return (
@@ -51,29 +82,43 @@ export default function ProfileScreen() {
     >
       <View style={styles.profileContent}>
         <View style={styles.profileCard}>
-          
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>?</Text>
+            <Text style={styles.avatarText}>
+              {user ? user.name.charAt(0).toUpperCase() : "?"}
+            </Text>
           </View>
-
         </View>
 
         <View style={styles.profileInfo}>
-            <Text style={styles.greeting}>Olá, viajante!</Text>
+          <Text style={styles.greeting}>
+            {user ? `Olá, ${user.name}!` : "Olá, viajante!"}
+          </Text>
 
-            <Text style={styles.profileDescription}>
-              Entre ou crie uma conta para salvar suas viagens e favoritos.
-            </Text>
+          <Text style={styles.profileDescription}>
+            {user
+              ? user.email
+              : "Entre ou crie uma conta para salvar suas viagens e favoritos."}
+          </Text>
         </View>
       </View>
 
-      <TouchableOpacity 
-        style={styles.accountButton} 
-        activeOpacity={0.8} 
-        onPress={handleAccount}
+      <TouchableOpacity
+        style={styles.accountButton}
+        activeOpacity={0.8}
+        onPress={
+          user
+            ? handleLogout
+            : () =>
+                navigation.navigate("Auth", {
+                  mode: "login",
+                })
+        }
       >
-          <Text style={styles.accountButtonText}>Entrar ou criar conta</Text>
-          <Text style={styles.arrow}>›</Text>
+        <Text style={styles.accountButtonText}>
+          {user ? "Sair da conta" : "Entrar ou criar conta"}
+        </Text>
+
+        <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
 
       <View style={styles.section}>
@@ -86,8 +131,11 @@ export default function ProfileScreen() {
         >
           <View>
             <Text style={styles.optionTitle}>Dados pessoais</Text>
+
             <Text style={styles.optionDescription}>
-              Gerencie suas informações
+              {user
+                ? "Visualize suas informações"
+                : "Gerencie suas informações"}
             </Text>
           </View>
 
@@ -101,6 +149,7 @@ export default function ProfileScreen() {
         >
           <View>
             <Text style={styles.optionTitle}>Preferências</Text>
+
             <Text style={styles.optionDescription}>
               Personalize sua experiência
             </Text>
@@ -116,18 +165,20 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={styles.option}
           activeOpacity={0.7}
-          onPress={handleAbout}
+          onPress={() => navigation.navigate("About")}
         >
           <Text style={styles.optionTitle}>Sobre o aplicativo</Text>
+
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.option}
           activeOpacity={0.7}
-          onPress={handlePrivacy}
+          onPress={() => navigation.navigate("Privacy")}
         >
           <Text style={styles.optionTitle}>Política de privacidade</Text>
+
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
       </View>
@@ -164,7 +215,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     padding: 18,
-
   },
 
   avatar: {

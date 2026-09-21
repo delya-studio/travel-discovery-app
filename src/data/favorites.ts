@@ -1,35 +1,134 @@
-export const favoriteTouristSpotIds: string[] = [];
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const toggleFavoriteTouristSpot = (touristSpotId: string) => {
-  const index = favoriteTouristSpotIds.indexOf(touristSpotId);
+import { getLoggedUser } from "./auth";
+
+const getStorageKey = (email: string) => {
+  return `@tryple_favorites_${email}`;
+};
+
+type FavoriteData = {
+  destinations: string[];
+  touristSpots: string[];
+};
+
+const getFavoriteData = async (): Promise<FavoriteData> => {
+  const user = await getLoggedUser();
+
+  if (!user) {
+    return {
+      destinations: [],
+      touristSpots: [],
+    };
+  }
+
+  const key = getStorageKey(user.email);
+  const storedData = await AsyncStorage.getItem(key);
+
+  if (!storedData) {
+    return {
+      destinations: [],
+      touristSpots: [],
+    };
+  }
+
+  return JSON.parse(storedData);
+};
+
+const saveFavoriteData = async (data: FavoriteData) => {
+  const user = await getLoggedUser();
+
+  if (!user) {
+    return;
+  }
+
+  const key = getStorageKey(user.email);
+
+  await AsyncStorage.setItem(
+    key,
+    JSON.stringify(data),
+  );
+};
+
+export const getFavoriteTouristSpotIds = async () => {
+  const data = await getFavoriteData();
+
+  return data.touristSpots;
+};
+
+export const getFavoriteDestinationIds = async () => {
+  const data = await getFavoriteData();
+
+  return data.destinations;
+};
+
+export const isTouristSpotFavorite = async (
+  touristSpotId: string,
+) => {
+  const data = await getFavoriteData();
+
+  return data.touristSpots.includes(touristSpotId);
+};
+
+export const toggleFavoriteTouristSpot = async (
+  touristSpotId: string,
+) => {
+  const user = await getLoggedUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const data = await getFavoriteData();
+
+  const index = data.touristSpots.indexOf(touristSpotId);
 
   if (index !== -1) {
-    favoriteTouristSpotIds.splice(index, 1);
+    data.touristSpots.splice(index, 1);
+
+    await saveFavoriteData(data);
+
     return false;
   }
 
-  favoriteTouristSpotIds.push(touristSpotId);
+  data.touristSpots.push(touristSpotId);
+
+  await saveFavoriteData(data);
+
   return true;
 };
 
-export const isTouristSpotFavorite = (touristSpotId: string) => {
-  return favoriteTouristSpotIds.includes(touristSpotId);
+export const isDestinationFavorite = async (
+  destinationId: string,
+) => {
+  const data = await getFavoriteData();
+
+  return data.destinations.includes(destinationId);
 };
 
-export const favoriteDestinationIds: string[] = [];
+export const toggleFavoriteDestination = async (
+  destinationId: string,
+) => {
+  const user = await getLoggedUser();
 
-export const toggleFavoriteDestination = (destinationId: string) => {
-  const index = favoriteDestinationIds.indexOf(destinationId);
+  if (!user) {
+    return null;
+  }
+
+  const data = await getFavoriteData();
+
+  const index = data.destinations.indexOf(destinationId);
 
   if (index !== -1) {
-    favoriteDestinationIds.splice(index, 1);
+    data.destinations.splice(index, 1);
+
+    await saveFavoriteData(data);
+
     return false;
   }
 
-  favoriteDestinationIds.push(destinationId);
-  return true;
-};
+  data.destinations.push(destinationId);
 
-export const isDestinationFavorite = (destinationId: string) => {
-  return favoriteDestinationIds.includes(destinationId);
+  await saveFavoriteData(data);
+
+  return true;
 };

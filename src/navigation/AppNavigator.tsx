@@ -8,6 +8,11 @@ import DestinationScreen from "../screens/DestinationScreen";
 import TouristSpotScreen from "../screens/TouristSpotScreen";
 import TouristSpotsScreen from "../screens/TouristSpotsScreen";
 import TripDetailsScreen from "../screens/TripDetailsScreen";
+import AuthScreen from "../screens/AuthScreen";
+import PersonalDataScreen from "../screens/PersonalDataScreen";
+import AboutScreen from "../screens/AboutScreen";
+import PrivacyScreen from "../screens/PrivacyScreen";
+
 import { RootStackParamList } from "../types/navigation";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -35,6 +40,14 @@ export default function AppNavigator() {
       <Stack.Screen name="TouristSpots" component={TouristSpotsScreen} />
 
       <Stack.Screen name="TripDetails" component={TripDetailsScreen} />
+
+      <Stack.Screen name="Auth" component={AuthScreen} />
+
+      <Stack.Screen name="PersonalData" component={PersonalDataScreen} />
+
+      <Stack.Screen name="About" component={AboutScreen} />
+
+      <Stack.Screen name="Privacy" component={PrivacyScreen} />
     </Stack.Navigator>
   );
 }
