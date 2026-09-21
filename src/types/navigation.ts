@@ -18,6 +18,8 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   Splash: undefined;
 
+  Welcome: undefined;
+
   About: undefined;
 
   Privacy: undefined;

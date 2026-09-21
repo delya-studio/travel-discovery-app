@@ -105,3 +105,15 @@ export const updateUser = async (updatedData: {
     );
   }
 };
+
+const WELCOME_COMPLETED_KEY = "@tryple_welcome_completed";
+
+export const hasCompletedWelcome = async () => {
+  const completed = await AsyncStorage.getItem(WELCOME_COMPLETED_KEY);
+
+  return completed === "true";
+};
+
+export const completeWelcome = async () => {
+  await AsyncStorage.setItem(WELCOME_COMPLETED_KEY, "true");
+};
