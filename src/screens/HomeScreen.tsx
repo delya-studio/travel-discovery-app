@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 import {
   ScrollView,
@@ -14,6 +15,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import DestinationCard from "../components/DestinationCard";
 import { destinations } from "../data/destinations";
 import { RootStackParamList } from "../types/navigation";
+import { getLoggedUser } from "../data/auth";
 
 export default function HomeScreen() {
   const navigation =
@@ -31,6 +33,20 @@ export default function HomeScreen() {
     ? destinations.filter((destination) => destination.state === selectedState)
     : destinations;
 
+  const [userName, setUserName] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadUser = async () => {
+        const user = await getLoggedUser();
+
+        setUserName(user?.name || "");
+      };
+
+      loadUser();
+    }, []),
+  );
+
   useEffect(() => {
     cardsScrollRef.current?.scrollTo({
       x: 0,
@@ -40,7 +56,9 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Olá, viajante!</Text>
+        <Text style={styles.greeting}>
+          {userName ? `Olá, ${userName}` : "Olá, viajante!"}
+        </Text>
         <Text style={styles.subtitle}>Bem-vindo ao Tryple</Text>
       </View>
 

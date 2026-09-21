@@ -9,9 +9,4 @@ export type TouristSpot = {
   openingHours: string;
   price: string;
   gallery: string[];
-  weather: {
-    temperature: number;
-    condition: string;
-    humidity: number;
-  };
 };

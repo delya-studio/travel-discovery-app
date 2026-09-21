@@ -20,6 +20,7 @@ import {
 import { RootStackParamList } from "../types/navigation";
 import { destinations } from "../data/destinations";
 import { touristSpots } from "../data/touristSpots";
+import { getCurrentWeather } from "../services/weather";
 
 type DestinationRouteProp = RouteProp<RootStackParamList, "Destination">;
 
@@ -41,6 +42,42 @@ export default function DestinationScreen() {
   );
 
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const [currentWeather, setCurrentWeather] = useState<{
+    temperature: number;
+    humidity: number;
+    condition: string;
+    precipitation: number;
+    time: string;
+  } | null>(null);
+
+  const [isLoadingWeather, setIsLoadingWeather] = useState(false);
+
+  useEffect(() => {
+    const loadWeather = async () => {
+      if (!destination) {
+        return;
+      }
+
+      try {
+        setIsLoadingWeather(true);
+
+        const weather = await getCurrentWeather(
+          destination.latitude,
+          destination.longitude,
+        );
+
+        setCurrentWeather(weather);
+      } catch (error) {
+        console.error("Erro ao carregar clima:", error);
+        setCurrentWeather(null);
+      } finally {
+        setIsLoadingWeather(false);
+      }
+    };
+
+    loadWeather();
+  }, [destination]);
 
   useEffect(() => {
     const loadFavorite = async () => {
@@ -254,10 +291,42 @@ export default function DestinationScreen() {
 
         {activeSection === "weather" && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Clima</Text>
+            <Text style={styles.sectionTitle}>Clima atual</Text>
 
             <View style={styles.climateCard}>
-              <Text>Informações sobre o clima</Text>
+              {isLoadingWeather ? (
+                <Text style={styles.weatherStatus}>Carregando clima...</Text>
+              ) : currentWeather ? (
+                <>
+                  <Text style={styles.temperature}>
+                    {Math.round(currentWeather.temperature)}°C
+                  </Text>
+
+                  <Text style={styles.condition}>
+                    {currentWeather.condition}
+                  </Text>
+
+                  <Text style={styles.humidity}>
+                    Umidade: {currentWeather.humidity}%
+                  </Text>
+
+                  <Text style={styles.precipitation}>
+                    Chuva: {currentWeather.precipitation} mm
+                  </Text>
+
+                  <Text style={styles.weatherUpdated}>
+                    Atualizado às{" "}
+                    {new Date(currentWeather.time).toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.weatherStatus}>
+                  Não foi possível carregar o clima.
+                </Text>
+              )}
             </View>
           </View>
         )}
@@ -447,12 +516,46 @@ const styles = StyleSheet.create({
   },
 
   climateCard: {
-    height: 120,
+    minHeight: 120,
     marginTop: 12,
-    padding: 16,
+    padding: 20,
     borderRadius: 12,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#cccccc",
     justifyContent: "center",
+  },
+
+  weatherStatus: {
+    fontSize: 16,
+    color: "#666666",
+  },
+
+  temperature: {
+    fontSize: 36,
+    fontWeight: "700",
+  },
+
+  condition: {
+    marginTop: 4,
+    fontSize: 17,
+    color: "#555555",
+  },
+
+  humidity: {
+    marginTop: 8,
+    fontSize: 14,
+    color: "#777777",
+  },
+
+  precipitation: {
+    marginTop: 4,
+    fontSize: 14,
+    color: "#777777",
+  },
+
+  weatherUpdated: {
+    marginTop: 12,
+    fontSize: 12,
+    color: "#999999",
   },
 
   errorContainer: {

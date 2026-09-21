@@ -253,22 +253,6 @@ export default function TouristSpotScreen() {
               </ScrollView>
             </>
           )}
-
-          <View style={styles.weatherContainer}>
-            <Text style={styles.weatherTitle}>Clima Atual</Text>
-
-            <Text style={styles.temperature}>
-              {touristSpot.weather.temperature}°C
-            </Text>
-
-            <Text style={styles.weatherCondition}>
-              {touristSpot.weather.condition}
-            </Text>
-
-            <Text style={styles.humidity}>
-              Umidade {touristSpot.weather.humidity}%
-            </Text>
-          </View>
         </View>
       </ScrollView>
 

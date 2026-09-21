@@ -7,4 +7,12 @@ export interface Destination {
   image: string;
   description: string;
   bestTimeToVisit: string;
+  latitude: number;
+  longitude: number;
+
+  weather: {
+    temperature: number;
+    condition: string;
+    humidity: number;
+  };
 }

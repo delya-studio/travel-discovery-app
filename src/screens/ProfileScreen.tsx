@@ -91,7 +91,7 @@ export default function ProfileScreen() {
 
         <View style={styles.profileInfo}>
           <Text style={styles.greeting}>
-            {user ? `Olá, ${user.name}!` : "Olá, viajante!"}
+            {user ? `Olá, ${user.name}` : "Olá, viajante!"}
           </Text>
 
           <Text style={styles.profileDescription}>
