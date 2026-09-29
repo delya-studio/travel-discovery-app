@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h1,
     fontSize: 34,
-    lineHeight: 40,
+    lineHeight: 52,
     color: colors.text,
     marginBottom: 10,
   },
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   introText: {
     ...typography.h3,
     fontSize: 19,
-    lineHeight: 27,
+    lineHeight: 28,
     color: colors.primary,
   },
 
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...typography.h3,
     fontSize: 20,
-    lineHeight: 26,
+    lineHeight: 32,
     color: colors.text,
   },
 
@@ -258,6 +258,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.text,
     fontWeight: "600",
+    marginTop: -4,
   },
 
   version: {

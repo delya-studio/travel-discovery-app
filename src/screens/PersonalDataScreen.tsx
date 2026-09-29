@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h1,
     fontSize: 34,
-    lineHeight: 40,
+    lineHeight: 48,
     color: colors.text,
     marginBottom: 10,
   },

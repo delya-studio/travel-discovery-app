@@ -51,6 +51,6 @@ export const typography = {
   caption: {
     fontFamily: "Narnoor",
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 28,
   },
 };

@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h1,
     fontSize: 34,
-    lineHeight: 40,
+    lineHeight: 48,
     color: colors.text,
     marginBottom: 10,
   },
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   infoText: {
     ...typography.h3,
     fontSize: 18,
-    lineHeight: 26,
+    lineHeight: 28,
     color: colors.primary,
   },
 
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...typography.h3,
     fontSize: 19,
-    lineHeight: 25,
+    lineHeight: 32,
     color: colors.text,
   },
 
