@@ -8,9 +8,14 @@ import {
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { RootStackParamList } from "../types/navigation";
+import { ArrowLeft, Code2, Compass, Heart, Map } from "lucide-react-native";
+
+import type { RootStackParamList } from "../types/navigation";
+
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
 
 export default function AboutScreen() {
   const navigation =
@@ -25,9 +30,12 @@ export default function AboutScreen() {
       >
         <TouchableOpacity
           style={styles.backButton}
+          activeOpacity={0.7}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={20} color={colors.text} strokeWidth={1.8} />
+
+          <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
         <View style={styles.header}>
@@ -38,8 +46,25 @@ export default function AboutScreen() {
           </Text>
         </View>
 
+        <View style={styles.introCard}>
+          <View style={styles.introIcon}>
+            <Compass size={24} color={colors.primary} strokeWidth={1.8} />
+          </View>
+
+          <Text style={styles.introText}>
+            Descubra lugares, organize suas viagens e tenha tudo reunido em um
+            só lugar.
+          </Text>
+        </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>O que é o Tryple?</Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <Map size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionTitle}>O que é o Tryple?</Text>
+          </View>
 
           <Text style={styles.text}>
             O Tryple é um aplicativo desenvolvido para facilitar a descoberta de
@@ -52,8 +77,16 @@ export default function AboutScreen() {
           </Text>
         </View>
 
+        <View style={styles.divider} />
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sobre o projeto</Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <Heart size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionTitle}>Sobre o projeto</Text>
+          </View>
 
           <Text style={styles.text}>
             O Tryple foi desenvolvido como um projeto de portfólio e hackathon,
@@ -62,10 +95,30 @@ export default function AboutScreen() {
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tecnologias</Text>
+        <View style={styles.divider} />
 
-          <Text style={styles.text}>React Native • Expo • TypeScript</Text>
+        <View style={styles.section}>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <Code2 size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionTitle}>Tecnologias</Text>
+          </View>
+
+          <View style={styles.techRow}>
+            <View style={styles.techBadge}>
+              <Text style={styles.techText}>React Native</Text>
+            </View>
+
+            <View style={styles.techBadge}>
+              <Text style={styles.techText}>Expo</Text>
+            </View>
+
+            <View style={styles.techBadge}>
+              <Text style={styles.techText}>TypeScript</Text>
+            </View>
+          </View>
         </View>
 
         <Text style={styles.version}>Tryple • Versão 1.0</Text>
@@ -77,7 +130,7 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EDEDED",
+    backgroundColor: colors.background,
   },
 
   container: {
@@ -85,23 +138,22 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 40,
   },
 
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#FFFFFF",
+    alignSelf: "flex-start",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
+    gap: 7,
+    marginBottom: 42,
   },
 
-  backIcon: {
-    fontSize: 25,
+  backText: {
+    ...typography.bodySmall,
+    color: colors.text,
   },
 
   header: {
@@ -109,41 +161,109 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "700",
+    ...typography.h1,
+    fontSize: 34,
+    lineHeight: 40,
+    color: colors.text,
+    marginBottom: 10,
   },
 
   subtitle: {
-    marginTop: 8,
-    fontSize: 16,
+    ...typography.body,
+    color: colors.textSecondary,
     lineHeight: 23,
-    color: "#666666",
+  },
+
+  introCard: {
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: colors.primaryLight,
+    marginBottom: 30,
+  },
+
+  introIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.background,
+    marginBottom: 14,
+  },
+
+  introText: {
+    ...typography.h3,
+    fontSize: 19,
+    lineHeight: 27,
+    color: colors.primary,
   },
 
   section: {
-    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 2,
+  },
+
+  sectionHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+
+  sectionIcon: {
+    width: 36,
+    height: 36,
     borderRadius: 18,
-    padding: 20,
-    marginBottom: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primaryLight,
+    marginRight: 10,
   },
 
   sectionTitle: {
-    fontSize: 19,
-    fontWeight: "700",
-    marginBottom: 10,
+    ...typography.h3,
+    fontSize: 20,
+    lineHeight: 26,
+    color: colors.text,
   },
 
   text: {
-    fontSize: 15,
-    lineHeight: 23,
-    color: "#444444",
-    marginBottom: 10,
+    ...typography.body,
+    color: colors.textSecondary,
+    lineHeight: 24,
+    marginBottom: 12,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: 26,
+  },
+
+  techRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+
+  techBadge: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  techText: {
+    ...typography.caption,
+    fontSize: 13,
+    color: colors.text,
+    fontWeight: "600",
   },
 
   version: {
+    ...typography.caption,
     textAlign: "center",
-    marginTop: 10,
-    fontSize: 13,
-    color: "#888888",
+    color: colors.textSecondary,
+    marginTop: 30,
   },
 });

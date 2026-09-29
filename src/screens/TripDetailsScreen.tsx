@@ -1,15 +1,27 @@
 import React, { useCallback, useState } from "react";
+
 import {
-  Alert,
   Image,
   Modal,
   ScrollView,
   StyleSheet,
-  TextInput,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+
+import {
+  AlertCircle,
+  ArrowLeft,
+  CalendarDays,
+  ChevronRight,
+  MapPin,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react-native";
 
 import {
   RouteProp,
@@ -17,14 +29,24 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
+
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { RootStackParamList } from "../types/navigation";
+
 import { getTrips, updateTrip, deleteTrip as removeTrip } from "../data/trips";
+
 import { Trip } from "../types/trip";
 import { touristSpots } from "../data/touristSpots";
 
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
+
 type TripDetailsRouteProp = RouteProp<RootStackParamList, "TripDetails">;
+
+type DeleteModal = {
+  visible: boolean;
+};
 
 const parseDate = (dateString: string) => {
   const [day, month, year] = dateString.split("/").map(Number);
@@ -88,14 +110,21 @@ export default function TripDetailsScreen() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+
   const [editTripName, setEditTripName] = useState("");
+
   const [editStartDate, setEditStartDate] = useState("");
+
   const [editEndDate, setEditEndDate] = useState("");
+
+  const [deleteModal, setDeleteModal] = useState<DeleteModal>({
+    visible: false,
+  });
 
   if (!trip) {
     return (
       <View style={styles.errorContainer}>
-        <Text>Viagem não encontrada.</Text>
+        <Text style={styles.errorText}>Viagem não encontrada.</Text>
       </View>
     );
   }
@@ -153,6 +182,7 @@ export default function TripDetailsScreen() {
 
     const updatedTrip: Trip = {
       ...trip,
+
       items: trip.items.map((item) =>
         item.id === selectedItemId
           ? {
@@ -235,25 +265,23 @@ export default function TripDetailsScreen() {
       return;
     }
 
-    Alert.alert(
-      "Excluir viagem",
-      `Tem certeza que deseja excluir "${trip.name}"? Esta ação não pode ser desfeita.`,
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: async () => {
-            await removeTrip(trip.id);
+    setDeleteModal({
+      visible: true,
+    });
+  };
 
-            navigation.goBack();
-          },
-        },
-      ],
-    );
+  const confirmDeleteTrip = async () => {
+    if (!trip) {
+      return;
+    }
+
+    setDeleteModal({
+      visible: false,
+    });
+
+    await removeTrip(trip.id);
+
+    navigation.goBack();
   };
 
   return (
@@ -263,15 +291,32 @@ export default function TripDetailsScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        {/* VOLTAR */}
+
         <TouchableOpacity
           style={styles.backButton}
+          activeOpacity={0.7}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={20} color={colors.text} strokeWidth={1.9} />
+
+          <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
+        {/* CABEÇALHO DA VIAGEM */}
+
         <View style={styles.header}>
-          <Text style={styles.title}>{trip.name}</Text>
+          <View style={styles.headerContent}>
+            <View style={styles.headerIcon}>
+              <CalendarDays
+                size={21}
+                color={colors.primary}
+                strokeWidth={1.8}
+              />
+            </View>
+
+            <Text style={styles.title}>{trip.name}</Text>
+          </View>
 
           <Text style={styles.dates}>
             {trip.startDate} — {trip.endDate}
@@ -284,15 +329,24 @@ export default function TripDetailsScreen() {
           </Text>
         </View>
 
+        {/* ROTEIRO */}
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Roteiro</Text>
 
-          <TouchableOpacity onPress={openEditModal}>
+          <TouchableOpacity
+            style={styles.editButton}
+            activeOpacity={0.7}
+            onPress={openEditModal}
+          >
+            <Pencil size={15} color={colors.primary} strokeWidth={1.9} />
+
             <Text style={styles.editText}>Editar</Text>
           </TouchableOpacity>
         </View>
 
         {/* DIAS */}
+
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -307,6 +361,7 @@ export default function TripDetailsScreen() {
               <TouchableOpacity
                 key={date}
                 style={[styles.dayButton, isSelected && styles.dayButtonActive]}
+                activeOpacity={0.8}
                 onPress={() => setSelectedDay(index)}
               >
                 <Text
@@ -333,6 +388,7 @@ export default function TripDetailsScreen() {
         </ScrollView>
 
         {/* DIA SELECIONADO */}
+
         <View style={styles.selectedDayHeader}>
           <View>
             <Text style={styles.selectedDayTitle}>Dia {selectedDay + 1}</Text>
@@ -342,14 +398,23 @@ export default function TripDetailsScreen() {
 
           <TouchableOpacity
             style={styles.addButton}
+            activeOpacity={0.8}
             onPress={() => setIsAddModalVisible(true)}
           >
-            <Text style={styles.addButtonText}>+ Adicionar ponto</Text>
+            <Plus size={17} color={colors.white} strokeWidth={2} />
+
+            <Text style={styles.addButtonText}>Adicionar</Text>
           </TouchableOpacity>
         </View>
 
+        {/* ITENS DO DIA */}
+
         {currentDayItems.length === 0 ? (
           <View style={styles.emptyDay}>
+            <View style={styles.emptyDayIcon}>
+              <MapPin size={21} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
             <Text style={styles.emptyDayTitle}>Nenhum ponto neste dia</Text>
 
             <Text style={styles.emptyDayText}>
@@ -358,9 +423,12 @@ export default function TripDetailsScreen() {
 
             <TouchableOpacity
               style={styles.emptyAddButton}
+              activeOpacity={0.8}
               onPress={() => setIsAddModalVisible(true)}
             >
-              <Text style={styles.emptyAddButtonText}>+ Adicionar ponto</Text>
+              <Plus size={17} color={colors.primary} strokeWidth={2} />
+
+              <Text style={styles.emptyAddButtonText}>Adicionar ponto</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -378,6 +446,7 @@ export default function TripDetailsScreen() {
                 <View key={item.id} style={styles.item}>
                   <TouchableOpacity
                     style={styles.itemMain}
+                    activeOpacity={0.8}
                     onPress={() =>
                       navigation.navigate("TouristSpot", {
                         touristSpotId: touristSpot.id,
@@ -389,17 +458,35 @@ export default function TripDetailsScreen() {
                     </View>
 
                     <Image
-                      source={{ uri: touristSpot.image }}
+                      source={{
+                        uri: touristSpot.image,
+                      }}
                       style={styles.image}
                     />
 
                     <View style={styles.itemInfo}>
-                      <Text style={styles.itemName}>{touristSpot.name}</Text>
-
-                      <Text style={styles.itemLocation}>
-                        {touristSpot.location}
+                      <Text style={styles.itemName} numberOfLines={2}>
+                        {touristSpot.name}
                       </Text>
+
+                      <View style={styles.locationRow}>
+                        <MapPin
+                          size={13}
+                          color={colors.textSecondary}
+                          strokeWidth={1.8}
+                        />
+
+                        <Text style={styles.itemLocation} numberOfLines={1}>
+                          {touristSpot.location}
+                        </Text>
+                      </View>
                     </View>
+
+                    <ChevronRight
+                      size={18}
+                      color={colors.textSecondary}
+                      strokeWidth={1.7}
+                    />
                   </TouchableOpacity>
 
                   <View style={styles.itemActions}>
@@ -418,6 +505,7 @@ export default function TripDetailsScreen() {
         )}
 
         {/* NÃO PLANEJADOS */}
+
         {unplannedItems.length > 0 && (
           <View style={styles.unplannedSection}>
             <Text style={styles.unplannedTitle}>Ainda não planejados</Text>
@@ -440,6 +528,7 @@ export default function TripDetailsScreen() {
                 <View key={item.id} style={styles.item}>
                   <TouchableOpacity
                     style={styles.itemMain}
+                    activeOpacity={0.8}
                     onPress={() =>
                       navigation.navigate("TouristSpot", {
                         touristSpotId: touristSpot.id,
@@ -447,17 +536,35 @@ export default function TripDetailsScreen() {
                     }
                   >
                     <Image
-                      source={{ uri: touristSpot.image }}
+                      source={{
+                        uri: touristSpot.image,
+                      }}
                       style={styles.image}
                     />
 
                     <View style={styles.itemInfo}>
-                      <Text style={styles.itemName}>{touristSpot.name}</Text>
-
-                      <Text style={styles.itemLocation}>
-                        {touristSpot.location}
+                      <Text style={styles.itemName} numberOfLines={2}>
+                        {touristSpot.name}
                       </Text>
+
+                      <View style={styles.locationRow}>
+                        <MapPin
+                          size={13}
+                          color={colors.textSecondary}
+                          strokeWidth={1.8}
+                        />
+
+                        <Text style={styles.itemLocation} numberOfLines={1}>
+                          {touristSpot.location}
+                        </Text>
+                      </View>
                     </View>
+
+                    <ChevronRight
+                      size={18}
+                      color={colors.textSecondary}
+                      strokeWidth={1.7}
+                    />
                   </TouchableOpacity>
 
                   <View style={styles.itemActions}>
@@ -475,25 +582,47 @@ export default function TripDetailsScreen() {
           </View>
         )}
 
-        <TouchableOpacity style={styles.deleteTripButton} onPress={deleteTrip}>
+        {/* EXCLUIR */}
+
+        <TouchableOpacity
+          style={styles.deleteTripButton}
+          activeOpacity={0.7}
+          onPress={deleteTrip}
+        >
+          <Trash2 size={17} color={colors.error} strokeWidth={1.8} />
+
           <Text style={styles.deleteTripText}>Excluir viagem</Text>
         </TouchableOpacity>
       </ScrollView>
 
       {/* MODAL PARA ADICIONAR PONTO */}
+
       <Modal
         visible={isAddModalVisible}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setIsAddModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>
-              Adicionar ao Dia {selectedDay + 1}
-            </Text>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>
+                  Adicionar ao Dia {selectedDay + 1}
+                </Text>
 
-            <Text style={styles.modalSubtitle}>{currentDate}</Text>
+                <Text style={styles.modalSubtitle}>{currentDate}</Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.modalClose}
+                activeOpacity={0.7}
+                onPress={() => setIsAddModalVisible(false)}
+              >
+                <X size={19} color={colors.textSecondary} strokeWidth={1.8} />
+              </TouchableOpacity>
+            </View>
 
             <ScrollView
               style={styles.spotList}
@@ -517,19 +646,32 @@ export default function TripDetailsScreen() {
                         alreadyAdded && styles.spotOptionDisabled,
                       ]}
                       disabled={alreadyAdded}
+                      activeOpacity={0.75}
                       onPress={() => addSpotToCurrentDay(touristSpot.id)}
                     >
                       <Image
-                        source={{ uri: touristSpot.image }}
+                        source={{
+                          uri: touristSpot.image,
+                        }}
                         style={styles.spotImage}
                       />
 
                       <View style={styles.spotInfo}>
-                        <Text style={styles.spotName}>{touristSpot.name}</Text>
-
-                        <Text style={styles.spotLocation}>
-                          {touristSpot.location}
+                        <Text style={styles.spotName} numberOfLines={2}>
+                          {touristSpot.name}
                         </Text>
+
+                        <View style={styles.locationRow}>
+                          <MapPin
+                            size={12}
+                            color={colors.textSecondary}
+                            strokeWidth={1.8}
+                          />
+
+                          <Text style={styles.spotLocation} numberOfLines={1}>
+                            {touristSpot.location}
+                          </Text>
+                        </View>
 
                         {alreadyAdded && (
                           <Text style={styles.alreadyAdded}>
@@ -537,6 +679,14 @@ export default function TripDetailsScreen() {
                           </Text>
                         )}
                       </View>
+
+                      {!alreadyAdded && (
+                        <Plus
+                          size={19}
+                          color={colors.primary}
+                          strokeWidth={2}
+                        />
+                      )}
                     </TouchableOpacity>
                   );
                 })}
@@ -544,6 +694,7 @@ export default function TripDetailsScreen() {
 
             <TouchableOpacity
               style={styles.cancelButton}
+              activeOpacity={0.7}
               onPress={() => setIsAddModalVisible(false)}
             >
               <Text style={styles.cancelText}>Cancelar</Text>
@@ -553,15 +704,27 @@ export default function TripDetailsScreen() {
       </Modal>
 
       {/* MODAL PARA ALTERAR O DIA */}
+
       <Modal
         visible={isDayModalVisible}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setIsDayModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Escolha o dia</Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Escolha o dia</Text>
+
+              <TouchableOpacity
+                style={styles.modalClose}
+                activeOpacity={0.7}
+                onPress={() => setIsDayModalVisible(false)}
+              >
+                <X size={19} color={colors.textSecondary} strokeWidth={1.8} />
+              </TouchableOpacity>
+            </View>
 
             <ScrollView
               style={styles.dayList}
@@ -571,17 +734,27 @@ export default function TripDetailsScreen() {
                 <TouchableOpacity
                   key={date}
                   style={styles.dayOption}
+                  activeOpacity={0.7}
                   onPress={() => assignItemToDay(date)}
                 >
-                  <Text style={styles.dayOptionTitle}>Dia {index + 1}</Text>
+                  <View>
+                    <Text style={styles.dayOptionTitle}>Dia {index + 1}</Text>
 
-                  <Text style={styles.dayOptionDate}>{date}</Text>
+                    <Text style={styles.dayOptionDate}>{date}</Text>
+                  </View>
+
+                  <ChevronRight
+                    size={18}
+                    color={colors.textSecondary}
+                    strokeWidth={1.7}
+                  />
                 </TouchableOpacity>
               ))}
             </ScrollView>
 
             <TouchableOpacity
               style={styles.cancelButton}
+              activeOpacity={0.7}
               onPress={() => setIsDayModalVisible(false)}
             >
               <Text style={styles.cancelText}>Cancelar</Text>
@@ -591,15 +764,27 @@ export default function TripDetailsScreen() {
       </Modal>
 
       {/* MODAL PARA EDITAR VIAGEM */}
+
       <Modal
         visible={isEditModalVisible}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setIsEditModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Editar viagem</Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Editar viagem</Text>
+
+              <TouchableOpacity
+                style={styles.modalClose}
+                activeOpacity={0.7}
+                onPress={() => setIsEditModalVisible(false)}
+              >
+                <X size={19} color={colors.textSecondary} strokeWidth={1.8} />
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.inputLabel}>Nome da viagem</Text>
 
@@ -608,6 +793,7 @@ export default function TripDetailsScreen() {
               value={editTripName}
               onChangeText={setEditTripName}
               placeholder="Nome da viagem"
+              placeholderTextColor={colors.textSecondary}
             />
 
             <Text style={styles.inputLabel}>Data de início</Text>
@@ -617,6 +803,7 @@ export default function TripDetailsScreen() {
               value={editStartDate}
               onChangeText={(value) => setEditStartDate(formatInputDate(value))}
               placeholder="DD/MM/AAAA"
+              placeholderTextColor={colors.textSecondary}
               keyboardType="numeric"
               maxLength={10}
             />
@@ -628,12 +815,14 @@ export default function TripDetailsScreen() {
               value={editEndDate}
               onChangeText={(value) => setEditEndDate(formatInputDate(value))}
               placeholder="DD/MM/AAAA"
+              placeholderTextColor={colors.textSecondary}
               keyboardType="numeric"
               maxLength={10}
             />
 
             <TouchableOpacity
               style={styles.saveButton}
+              activeOpacity={0.8}
               onPress={saveTripChanges}
             >
               <Text style={styles.saveButtonText}>Salvar alterações</Text>
@@ -641,7 +830,71 @@ export default function TripDetailsScreen() {
 
             <TouchableOpacity
               style={styles.cancelButton}
+              activeOpacity={0.7}
               onPress={() => setIsEditModalVisible(false)}
+            >
+              <Text style={styles.cancelText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL PARA EXCLUIR VIAGEM */}
+
+      <Modal
+        visible={deleteModal.visible}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() =>
+          setDeleteModal({
+            visible: false,
+          })
+        }
+      >
+        <View style={styles.deleteOverlay}>
+          <View style={styles.deleteModal}>
+            <View style={styles.deleteModalHeader}>
+              <View style={styles.deleteIcon}>
+                <AlertCircle size={22} color={colors.error} strokeWidth={1.9} />
+              </View>
+
+              <TouchableOpacity
+                style={styles.modalClose}
+                activeOpacity={0.7}
+                onPress={() =>
+                  setDeleteModal({
+                    visible: false,
+                  })
+                }
+              >
+                <X size={19} color={colors.textSecondary} strokeWidth={1.8} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.deleteModalTitle}>Excluir viagem</Text>
+
+            <Text style={styles.deleteModalMessage}>
+              Tem certeza que deseja excluir "{trip.name}"? Esta ação não pode
+              ser desfeita.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.deleteConfirmButton}
+              activeOpacity={0.8}
+              onPress={confirmDeleteTrip}
+            >
+              <Text style={styles.deleteConfirmText}>Excluir viagem</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.cancelButton}
+              activeOpacity={0.7}
+              onPress={() =>
+                setDeleteModal({
+                  visible: false,
+                })
+              }
             >
               <Text style={styles.cancelText}>Cancelar</Text>
             </TouchableOpacity>
@@ -655,7 +908,7 @@ export default function TripDetailsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EDEDED",
+    backgroundColor: colors.background,
   },
 
   container: {
@@ -663,175 +916,332 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 40,
   },
 
+  // VOLTAR
+
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#FFFFFF",
+    alignSelf: "flex-start",
+
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
+
+    gap: 7,
+
+    marginBottom: 40,
   },
 
-  backIcon: {
-    fontSize: 25,
+  backText: {
+    ...typography.bodySmall,
+
+    color: colors.text,
   },
+
+  // CABEÇALHO
 
   header: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
     padding: 20,
+
+    borderRadius: 24,
+
+    backgroundColor: colors.primaryLight,
+
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+
+  headerContent: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 16,
+  },
+
+  headerIcon: {
+    width: 44,
+    height: 44,
+
+    borderRadius: 22,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.background,
+
+    marginBottom: 14,
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: "700",
+    ...typography.h1,
+
+    fontSize: 32,
+    lineHeight: 38,
+    marginTop: -24,
+
+    color: colors.text,
   },
 
   dates: {
-    marginTop: 8,
-    fontSize: 16,
-    color: "#666666",
+    ...typography.body,
+
+    color: colors.textSecondary,
+
+    marginLeft: 7,
   },
 
   count: {
-    marginTop: 6,
-    fontSize: 14,
-    color: "#666666",
+    ...typography.bodySmall,
+
+    color: colors.primaryMedium,
+
+    fontWeight: "600",
+    marginLeft: 7,
+    marginTop: 7,
   },
+
+  // CABEÇALHO ROTEIRO
 
   sectionHeader: {
     marginTop: 30,
     marginBottom: 14,
+
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
 
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: "700",
+    ...typography.h2,
+
+    fontSize: 25,
+    lineHeight: 31,
+
+    color: colors.text,
+  },
+
+  editButton: {
+    height: 36,
+
+    paddingHorizontal: 12,
+
+    borderRadius: 18,
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    gap: 6,
+
+    backgroundColor: colors.primaryLight,
   },
 
   editText: {
-    fontSize: 15,
+    ...typography.caption,
+
+    color: colors.primary,
+
+    marginTop: -5,
     fontWeight: "600",
   },
 
+  // DIAS
+
   daysContainer: {
     gap: 10,
+
     paddingBottom: 4,
   },
 
   dayButton: {
-    width: 100,
-    paddingVertical: 12,
+    width: 115,
+
+    paddingVertical: 13,
     paddingHorizontal: 10,
-    borderRadius: 16,
-    backgroundColor: "#FFFFFF",
+
+    borderRadius: 18,
+
+    backgroundColor: colors.surface,
+
+    borderWidth: 1,
+    borderColor: colors.border,
+
     alignItems: "center",
   },
 
   dayButtonActive: {
-    backgroundColor: "#000000",
+    backgroundColor: colors.primary,
+
+    borderColor: colors.primary,
   },
 
   dayNumber: {
-    fontSize: 15,
-    fontWeight: "700",
+    ...typography.bodySmall,
+
+    color: colors.text,
+
+    fontWeight: "600",
   },
 
   dayDate: {
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
     marginTop: 4,
-    fontSize: 13,
-    color: "#666666",
   },
 
   dayCount: {
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
     marginTop: 5,
-    fontSize: 12,
-    color: "#888888",
   },
 
   dayTextActive: {
-    color: "#FFFFFF",
+    color: colors.white,
   },
 
+  // DIA SELECIONADO
+
   selectedDayHeader: {
-    marginTop: 24,
+    marginTop: 26,
     marginBottom: 12,
+
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
 
   selectedDayTitle: {
-    fontSize: 20,
-    fontWeight: "700",
+    ...typography.h3,
+
+    fontSize: 21,
+    lineHeight: 27,
+
+    color: colors.text,
   },
 
   selectedDayDate: {
-    marginTop: 4,
-    fontSize: 14,
-    color: "#666666",
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
+    marginTop: 3,
   },
 
   addButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 18,
-    backgroundColor: "#FFFFFF",
+    height: 40,
+
+    paddingHorizontal: 18,
+
+    borderRadius: 20,
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    gap: 6,
+
+    backgroundColor: colors.primary,
   },
 
   addButtonText: {
-    fontSize: 13,
+    ...typography.caption,
+
+    color: colors.white,
+    marginTop: -5,
     fontWeight: "600",
   },
 
+  // DIA VAZIO
+
   emptyDay: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 20,
+    padding: 22,
+
+    borderRadius: 20,
+
+    backgroundColor: colors.surface,
+
+    borderWidth: 1,
+    borderColor: colors.border,
+
+    alignItems: "flex-start",
+  },
+
+  emptyDayIcon: {
+    width: 44,
+    height: 44,
+
+    borderRadius: 22,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.primaryLight,
+
+    marginBottom: 14,
   },
 
   emptyDayTitle: {
-    fontSize: 17,
-    fontWeight: "600",
+    ...typography.h3,
+
+    fontSize: 19,
+    lineHeight: 25,
+
+    color: colors.text,
   },
 
   emptyDayText: {
-    marginTop: 6,
-    fontSize: 14,
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
+
     lineHeight: 20,
-    color: "#666666",
+
+    marginTop: 6,
   },
 
   emptyAddButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "#EEEEEE",
+    height: 44,
+
+    paddingHorizontal: 15,
+
+    borderRadius: 22,
+
+    flexDirection: "row",
     alignItems: "center",
+
+    gap: 7,
+
+    backgroundColor: colors.primaryLight,
+
+    marginTop: 16,
   },
 
   emptyAddButtonText: {
-    fontSize: 14,
+    ...typography.caption,
+
+    color: colors.primary,
+
     fontWeight: "600",
   },
+
+  // ITENS
 
   items: {
     gap: 12,
   },
 
   item: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
     padding: 12,
+
+    borderRadius: 20,
+
+    backgroundColor: colors.surface,
+
+    borderWidth: 1,
+    borderColor: colors.border,
   },
 
   itemMain: {
@@ -842,113 +1252,204 @@ const styles = StyleSheet.create({
   orderCircle: {
     width: 28,
     height: 28,
+
     borderRadius: 14,
-    backgroundColor: "#EEEEEE",
+
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 8,
+
+    backgroundColor: colors.border,
+
+    marginRight: 12,
   },
 
   orderText: {
-    fontSize: 13,
+    ...typography.caption,
+
+    color: colors.primaryMedium,
+
     fontWeight: "700",
   },
 
   image: {
     width: 76,
     height: 76,
-    borderRadius: 12,
+
+    borderRadius: 14,
   },
 
   itemInfo: {
     flex: 1,
-    marginLeft: 12,
+
+    marginLeft: 15,
+    marginRight: 8,
   },
 
   itemName: {
-    fontSize: 16,
+    ...typography.body,
+
+    color: colors.text,
+
     fontWeight: "600",
+
+    lineHeight: 20,
+    marginBottom: 4,
+  },
+
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+
+    gap: 4,
+
+    marginTop: 6,
   },
 
   itemLocation: {
-    marginTop: 5,
-    fontSize: 13,
-    color: "#666666",
+    flex: 1,
+
+    ...typography.caption,
+    marginTop: -5,
+    color: colors.textSecondary,
   },
 
   itemActions: {
     flexDirection: "row",
+
     gap: 18,
+
     marginTop: 10,
     paddingTop: 10,
+
     borderTopWidth: 1,
-    borderTopColor: "#EEEEEE",
+    borderTopColor: colors.border,
   },
 
   actionText: {
-    fontSize: 13,
+    ...typography.caption,
+
+    color: colors.primary,
+
     fontWeight: "600",
   },
 
   removeText: {
-    fontSize: 13,
+    ...typography.caption,
+
+    color: colors.error,
+
     fontWeight: "600",
   },
+
+  // NÃO PLANEJADOS
 
   unplannedSection: {
     marginTop: 30,
   },
 
   unplannedTitle: {
-    fontSize: 19,
-    fontWeight: "700",
+    ...typography.h3,
+
+    fontSize: 20,
+    lineHeight: 26,
+
+    color: colors.text,
   },
 
   unplannedSubtitle: {
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
     marginTop: 4,
     marginBottom: 12,
-    fontSize: 14,
-    color: "#666666",
   },
 
+  // EXCLUIR
+
   deleteTripButton: {
-    marginTop: 30,
-    marginBottom: 20,
-    paddingVertical: 14,
+    height: 48,
+
+    marginTop: 26,
+    marginBottom: 10,
+
+    borderRadius: 24,
+
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+
+    gap: 10,
+
+    backgroundColor: "rgba(169, 74, 66, 0.08)",
   },
 
   deleteTripText: {
-    color: "#C62828",
-    fontSize: 15,
+    ...typography.caption,
+
+    color: colors.error,
+    marginTop: -5,
     fontWeight: "600",
   },
 
+  // MODAIS
+
   modalOverlay: {
     flex: 1,
+
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+
+    backgroundColor: "rgba(35, 35, 35, 0.42)",
   },
 
   modalContainer: {
-    maxHeight: "80%",
-    backgroundColor: "#FFFFFF",
+    maxHeight: "82%",
+
+    paddingHorizontal: 24,
+    paddingTop: 22,
+    paddingBottom: 30,
+
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 30,
+
+    backgroundColor: colors.background,
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    marginBottom: 18,
   },
 
   modalTitle: {
-    fontSize: 22,
-    fontWeight: "700",
+    ...typography.h2,
+
+    fontSize: 23,
+    lineHeight: 29,
+
+    color: colors.text,
   },
 
   modalSubtitle: {
-    marginTop: 4,
-    marginBottom: 18,
-    fontSize: 14,
-    color: "#666666",
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
+    marginTop: 3,
+  },
+
+  modalClose: {
+    width: 36,
+    height: 36,
+
+    borderRadius: 18,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.surface,
   },
 
   spotList: {
@@ -956,11 +1457,15 @@ const styles = StyleSheet.create({
   },
 
   spotOption: {
+    minHeight: 78,
+
     flexDirection: "row",
     alignItems: "center",
+
     paddingVertical: 10,
+
     borderBottomWidth: 1,
-    borderBottomColor: "#EEEEEE",
+    borderBottomColor: colors.border,
   },
 
   spotOptionDisabled: {
@@ -970,29 +1475,43 @@ const styles = StyleSheet.create({
   spotImage: {
     width: 65,
     height: 65,
-    borderRadius: 10,
+
+    borderRadius: 13,
   },
 
   spotInfo: {
     flex: 1,
+
     marginLeft: 12,
+    marginRight: 10,
   },
 
   spotName: {
-    fontSize: 15,
+    ...typography.bodySmall,
+
+    color: colors.text,
+
     fontWeight: "600",
+
+    lineHeight: 19,
   },
 
   spotLocation: {
-    marginTop: 4,
-    fontSize: 13,
-    color: "#666666",
+    flex: 1,
+
+    ...typography.caption,
+
+    color: colors.textSecondary,
   },
 
   alreadyAdded: {
-    marginTop: 5,
-    fontSize: 12,
+    ...typography.caption,
+
+    color: colors.primary,
+
     fontWeight: "600",
+
+    marginTop: 5,
   },
 
   dayList: {
@@ -1000,68 +1519,191 @@ const styles = StyleSheet.create({
   },
 
   dayOption: {
-    paddingVertical: 15,
+    minHeight: 64,
+
+    paddingVertical: 14,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
     borderBottomWidth: 1,
-    borderBottomColor: "#EEEEEE",
+    borderBottomColor: colors.border,
   },
 
   dayOptionTitle: {
-    fontSize: 16,
+    ...typography.bodySmall,
+
+    color: colors.text,
+
     fontWeight: "600",
   },
 
   dayOptionDate: {
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
     marginTop: 4,
-    fontSize: 14,
-    color: "#666666",
+  },
+
+  inputLabel: {
+    ...typography.caption,
+
+    color: colors.text,
+
+    fontWeight: "600",
+
+    marginBottom: 6,
+    marginTop: 10,
+  },
+
+  tripInput: {
+    height: 54,
+
+    paddingHorizontal: 16,
+
+    borderRadius: 16,
+
+    backgroundColor: colors.surface,
+
+    borderWidth: 1,
+    borderColor: colors.border,
+
+    ...typography.bodySmall,
+
+    color: colors.text,
+
+    marginBottom: 6,
+  },
+
+  saveButton: {
+    height: 52,
+
+    marginTop: 18,
+
+    borderRadius: 26,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.primary,
+  },
+
+  saveButtonText: {
+    ...typography.button,
+
+    color: colors.white,
   },
 
   cancelButton: {
-    height: 48,
-    marginTop: 12,
+    height: 46,
+
+    marginTop: 6,
+
     alignItems: "center",
     justifyContent: "center",
   },
 
   cancelText: {
-    fontSize: 15,
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
+
     fontWeight: "600",
   },
 
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 6,
-    marginTop: 12,
-  },
+  // MODAL EXCLUSÃO
 
-  tripInput: {
-    borderWidth: 1,
-    borderColor: "#D0D0D0",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    backgroundColor: "#FFFFFF",
-  },
+  deleteOverlay: {
+    flex: 1,
 
-  saveButton: {
-    marginTop: 20,
-    backgroundColor: "#000000",
-    paddingVertical: 14,
-    borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
+
+    paddingHorizontal: 24,
+
+    backgroundColor: "rgba(35, 35, 35, 0.42)",
   },
 
-  saveButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "600",
+  deleteModal: {
+    width: "100%",
+    maxWidth: 360,
+
+    padding: 24,
+
+    borderRadius: 26,
+
+    backgroundColor: colors.background,
+  },
+
+  deleteModalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    marginBottom: 20,
+  },
+
+  deleteIcon: {
+    width: 46,
+    height: 46,
+
+    borderRadius: 23,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: "rgba(169, 74, 66, 0.10)",
+  },
+
+  deleteModalTitle: {
+    ...typography.h2,
+
+    color: colors.text,
+
+    marginBottom: 8,
+  },
+
+  deleteModalMessage: {
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
+
+    lineHeight: 21,
+
+    marginBottom: 20,
+  },
+
+  deleteConfirmButton: {
+    height: 50,
+
+    borderRadius: 25,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.error,
+  },
+
+  deleteConfirmText: {
+    ...typography.button,
+
+    color: colors.white,
   },
 
   errorContainer: {
     flex: 1,
+
     alignItems: "center",
     justifyContent: "center",
+
+    backgroundColor: colors.background,
+  },
+
+  errorText: {
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
   },
 });

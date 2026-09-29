@@ -12,16 +12,25 @@ import {
 } from "react-native";
 
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import {
+  ArrowUpRight,
+  CalendarDays,
+  MapPin,
+  Plus,
+  X,
+} from "lucide-react-native";
 
 import { RootStackParamList } from "../types/navigation";
 import { createTrip, getTrips } from "../data/trips";
 import { destinations } from "../data/destinations";
 import { touristSpots } from "../data/touristSpots";
 import { getLoggedUser } from "../data/auth";
-
 import { Trip } from "../types/trip";
+
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
 
 export default function TripsScreen() {
   const navigation =
@@ -192,7 +201,13 @@ export default function TripsScreen() {
               style={styles.createTripButton}
               onPress={openCreateTrip}
             >
-              <Text style={styles.createTripButtonText}>+ Criar viagem</Text>
+              <View style={styles.createTripButtonContent}>
+                <Text style={styles.createTripButtonText}>Criar viagem</Text>
+
+                <View style={styles.createTripIcon}>
+                  <Plus size={18} color={colors.white} strokeWidth={2} />
+                </View>
+              </View>
             </TouchableOpacity>
           </View>
         ) : (
@@ -201,7 +216,13 @@ export default function TripsScreen() {
               style={styles.createTripButton}
               onPress={openCreateTrip}
             >
-              <Text style={styles.createTripButtonText}>+ Criar viagem</Text>
+              <View style={styles.createTripButtonContent}>
+                <Text style={styles.createTripButtonText}>Criar viagem</Text>
+
+                <View style={styles.createTripIcon}>
+                  <Plus size={18} color={colors.white} strokeWidth={2} />
+                </View>
+              </View>
             </TouchableOpacity>
 
             {tripList.map((trip) => (
@@ -217,9 +238,17 @@ export default function TripsScreen() {
               >
                 <Text style={styles.tripName}>{trip.name}</Text>
 
-                <Text style={styles.tripDates}>
-                  {trip.startDate} — {trip.endDate}
-                </Text>
+                <View style={styles.tripDateRow}>
+                  <CalendarDays
+                    size={16}
+                    color={colors.textSecondary}
+                    strokeWidth={1.8}
+                  />
+
+                  <Text style={styles.tripDates}>
+                    {trip.startDate} — {trip.endDate}
+                  </Text>
+                </View>
 
                 {trip.items.length === 0 ? (
                   <Text style={styles.emptyText}>
@@ -250,9 +279,17 @@ export default function TripsScreen() {
                               {touristSpot.name}
                             </Text>
 
-                            <Text style={styles.itemLocation}>
-                              {touristSpot.location}
-                            </Text>
+                            <View style={styles.itemLocationRow}>
+                              <MapPin
+                                size={14}
+                                color={colors.textSecondary}
+                                strokeWidth={1.8}
+                              />
+
+                              <Text style={styles.itemLocation}>
+                                {touristSpot.location}
+                              </Text>
+                            </View>
                           </View>
                         </View>
                       );
@@ -269,11 +306,21 @@ export default function TripsScreen() {
         visible={isCreateModalVisible}
         transparent
         animationType="slide"
+        statusBarTranslucent
         onRequestClose={() => setIsCreateModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Criar viagem</Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Criar viagem</Text>
+
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => setIsCreateModalVisible(false)}
+              >
+                <X size={20} color={colors.text} strokeWidth={2} />
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.inputLabel}>Nome da viagem</Text>
 
@@ -362,85 +409,119 @@ export default function TripsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: colors.background,
+    height: "100%",
   },
 
   container: {
     flex: 1,
-    backgroundColor: "#EDEDED",
-    padding: 20,
+    backgroundColor: colors.background,
+    paddingHorizontal: 20,
+    paddingTop: 68,
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: "700",
+    ...typography.h1,
+    color: colors.text,
     marginBottom: 24,
+    paddingVertical: 5,
   },
 
   emptyContainer: {
+    height: "100%",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 80,
+    justifyContent: "center",
+    paddingHorizontal: 0,
+    paddingTop: "50%",
   },
 
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    ...typography.h3,
+    color: colors.text,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 10,
   },
 
   emptyText: {
-    fontSize: 14,
+    ...typography.bodySmall,
+    color: colors.textSecondary,
     lineHeight: 20,
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: 28,
   },
 
   createTripButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 10,
-    backgroundColor: "#000000",
+    minHeight: 58,
+    width: "100%",
+    paddingLeft: 0,
+    paddingRight: 6,
+    paddingVertical: 10,
+    borderRadius: 60,
+    backgroundColor: colors.primary,
     alignItems: "center",
+    justifyContent: "center",
+  },
+
+  createTripButtonContent: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 18,
   },
 
   createTripButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "600",
+    ...typography.button,
+    color: colors.white,
+    textTransform: "uppercase",
+    paddingBottom: 5,
+  },
+
+  createTripIcon: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   loginButton: {
-    marginTop: 10,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+    marginTop: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    alignItems: "center",
   },
 
   loginButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
+    ...typography.button,
+    color: colors.primary,
+    textTransform: "uppercase",
   },
 
   tripCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    marginTop: 26,
     padding: 18,
-    marginTop: 16,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
 
   tripName: {
-    fontSize: 22,
-    fontWeight: "700",
+    ...typography.h2,
+    color: colors.text,
+  },
+
+  tripDateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    marginTop: 7,
   },
 
   tripDates: {
-    marginTop: 6,
-    fontSize: 14,
-    color: "#666666",
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
 
   items: {
-    marginTop: 16,
+    marginTop: 18,
     gap: 12,
   },
 
@@ -450,9 +531,9 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
+    width: 76,
+    height: 76,
+    borderRadius: 16,
   },
 
   itemInfo: {
@@ -461,51 +542,84 @@ const styles = StyleSheet.create({
   },
 
   itemName: {
-    fontSize: 17,
-    fontWeight: "600",
+    ...typography.h3,
+    fontSize: 18,
+    lineHeight: 23,
+    color: colors.text,
+  },
+
+  itemLocationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 5,
   },
 
   itemLocation: {
-    marginTop: 4,
-    fontSize: 14,
-    color: "#666666",
+    ...typography.caption,
+    color: colors.textSecondary,
+    flexShrink: 1,
   },
 
   modalOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: "rgba(35, 35, 35, 0.35)",
   },
 
   modalContainer: {
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     padding: 24,
     paddingBottom: 30,
   },
 
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "700",
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
 
+  modalTitle: {
+    ...typography.h2,
+    color: colors.text,
+  },
+
+  modalCloseButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
+  },
+
   inputLabel: {
-    fontSize: 14,
+    ...typography.bodySmall,
+    color: colors.text,
     fontWeight: "600",
     marginTop: 14,
-    marginBottom: 6,
+    marginBottom: 7,
   },
 
   tripInput: {
+    height: 48,
     borderWidth: 1,
-    borderColor: "#D0D0D0",
-    borderRadius: 10,
+    borderColor: colors.border,
+    borderRadius: 14,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    backgroundColor: "#FFFFFF",
+    paddingVertical: 0,
+    ...typography.bodySmall,
+    color: colors.text,
+    backgroundColor: colors.surface,
   },
 
   destinationOptions: {
@@ -515,48 +629,52 @@ const styles = StyleSheet.create({
 
   destinationOption: {
     borderWidth: 1,
-    borderColor: "#D0D0D0",
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    borderColor: colors.border,
+    borderRadius: 60,
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    backgroundColor: colors.surface,
   },
 
   destinationOptionSelected: {
-    backgroundColor: "#000000",
-    borderColor: "#000000",
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
 
   destinationOptionText: {
+    ...typography.caption,
     fontSize: 14,
+    color: colors.text,
+    paddingBottom: 5,
   },
 
   destinationOptionTextSelected: {
-    color: "#FFFFFF",
+    color: colors.white,
     fontWeight: "600",
   },
 
   saveButton: {
+    height: 52,
     marginTop: 22,
-    backgroundColor: "#000000",
-    paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: 26,
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primary,
   },
 
   saveButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "600",
+    ...typography.button,
+    color: colors.white,
   },
 
   cancelButton: {
-    marginTop: 10,
+    marginTop: 8,
     paddingVertical: 12,
     alignItems: "center",
   },
 
   cancelText: {
-    fontSize: 15,
-    fontWeight: "600",
+    ...typography.button,
+    color: colors.textSecondary,
   },
 });

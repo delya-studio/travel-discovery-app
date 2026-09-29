@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { typography } from "../theme/typography";
+import { colors } from "../theme/colors";
 
 import { hasCompletedWelcome } from "../data/auth";
 import type { RootStackParamList } from "../types/navigation";
@@ -13,15 +15,7 @@ export default function SplashScreen() {
 
   useEffect(() => {
     const checkWelcome = async () => {
-      const completed = await hasCompletedWelcome();
-
-      if (completed) {
-        navigation.replace("Main", {
-          screen: "Home",
-        });
-      } else {
-        navigation.replace("Welcome");
-      }
+      navigation.replace("Welcome");
     };
 
     const timer = setTimeout(checkWelcome, 2000);
@@ -31,8 +25,7 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>TRIPLE</Text>
-      <Text>SPLASH SCREEN</Text>
+      <Text style={styles.logo}>Tryple</Text>
     </View>
   );
 }
@@ -42,10 +35,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: colors.primaryMedium,
   },
 
   logo: {
-    fontSize: 40,
-    fontWeight: "bold",
+    ...typography.display,
+    textTransform: "uppercase",
+    fontSize: 50,
+    lineHeight: 70,
+    includeFontPadding: true,
+    paddingVertical: 8,
+    color: colors.white,
   },
 });

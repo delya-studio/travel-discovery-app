@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 
+import { ArrowLeft, Search, X } from "lucide-react-native";
+
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,6 +20,9 @@ import { RootStackParamList } from "../types/navigation";
 
 import { destinations } from "../data/destinations";
 import { touristSpots } from "../data/touristSpots";
+
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
 
 type TouristSpotsRouteProp = RouteProp<RootStackParamList, "TouristSpots">;
 
@@ -67,23 +72,43 @@ export default function TouristSpotsScreen() {
       >
         <TouchableOpacity
           style={styles.backButton}
+          activeOpacity={0.7}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backText}>← Voltar</Text>
+          <ArrowLeft size={19} color={colors.text} strokeWidth={1.9} />
+
+          <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>Pontos turísticos</Text>
+        <View style={styles.header}>
+          <Text style={styles.title}>Pontos turísticos</Text>
 
-        <Text style={styles.destinationName}>{destination.name}</Text>
+          <Text style={styles.destinationName}>{destination.name}</Text>
+        </View>
 
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar local"
-          value={search}
-          onChangeText={setSearch}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        <View style={styles.searchContainer}>
+          <Search size={19} color={colors.textSecondary} strokeWidth={1.9} />
+
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar local"
+            placeholderTextColor={colors.textSecondary}
+            value={search}
+            onChangeText={setSearch}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          {search.length > 0 && (
+            <TouchableOpacity
+              style={styles.clearButton}
+              activeOpacity={0.7}
+              onPress={() => setSearch("")}
+            >
+              <X size={21} color={colors.textSecondary} strokeWidth={2} />
+            </TouchableOpacity>
+          )}
+        </View>
 
         <Text style={styles.resultText}>
           {filteredSpots.length}{" "}
@@ -97,6 +122,7 @@ export default function TouristSpotsScreen() {
             <TouchableOpacity
               key={spot.id}
               style={styles.card}
+              activeOpacity={0.85}
               onPress={() =>
                 navigation.navigate("TouristSpot", {
                   touristSpotId: spot.id,
@@ -119,6 +145,10 @@ export default function TouristSpotsScreen() {
 
           {filteredSpots.length === 0 && (
             <View style={styles.empty}>
+              <View style={styles.emptyIcon}>
+                <Search size={22} color={colors.primary} strokeWidth={1.8} />
+              </View>
+
               <Text style={styles.emptyTitle}>Nenhum local encontrado</Text>
 
               <Text style={styles.emptyText}>
@@ -135,111 +165,215 @@ export default function TouristSpotsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background,
   },
 
   content: {
     paddingHorizontal: 20,
-    paddingTop: 55,
-    paddingBottom: 30,
+    paddingTop: 60,
+    paddingBottom: 40,
   },
 
   backButton: {
     alignSelf: "flex-start",
-    marginBottom: 24,
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    gap: 7,
+
+    marginBottom: 40,
   },
 
   backText: {
-    fontSize: 16,
+    ...typography.bodySmall,
+
+    color: colors.text,
+  },
+
+  header: {
+    marginBottom: 24,
+    paddingHorizontal: 2,
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: "700",
+    ...typography.h1,
+
+    fontSize: 34,
+    lineHeight: 40,
+
+    color: colors.text,
   },
 
   destinationName: {
-    fontSize: 16,
-    marginTop: 4,
-    marginBottom: 20,
+    ...typography.body,
+    textTransform: "uppercase",
+    color: colors.textSecondary,
+
+    marginTop: 14,
+  },
+
+  searchContainer: {
+    height: 54,
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    paddingHorizontal: 16,
+
+    borderRadius: 60,
+
+    backgroundColor: colors.surface,
+
+    borderWidth: 1,
+    borderColor: colors.border,
   },
 
   searchInput: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#D9D9D9",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    backgroundColor: "#FFFFFF",
+    flex: 1,
+
+    height: "100%",
+
+    paddingHorizontal: 10,
+
+    ...typography.bodySmall,
+
+    color: colors.text,
+  },
+
+  clearButton: {
+    width: 28,
+    height: 28,
+
+    borderRadius: 14,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.border,
   },
 
   resultText: {
-    fontSize: 14,
-    marginTop: 12,
-    marginBottom: 16,
+    ...typography.caption,
+
+    color: colors.textSecondary,
+
+    marginTop: 18,
+    marginBottom: 22,
+    paddingHorizontal: 2,
   },
 
   list: {
-    gap: 16,
+    gap: 14,
   },
 
   card: {
-    borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#FFFFFF",
+
+    borderRadius: 22,
+
+    backgroundColor: colors.surface,
+
     borderWidth: 1,
-    borderColor: "#EEEEEE",
+    borderColor: colors.border,
   },
 
   image: {
     width: "100%",
-    height: 180,
+    height: 190,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
   },
 
   cardContent: {
-    padding: 16,
+    padding: 18,
   },
 
   name: {
-    fontSize: 19,
-    fontWeight: "700",
+    ...typography.h3,
+
+    fontSize: 22,
+    lineHeight: 27,
+
+    color: colors.text,
+
     marginBottom: 5,
   },
 
   category: {
-    fontSize: 14,
-    marginBottom: 8,
+    ...typography.caption,
+
+    color: colors.primary,
+
+    fontWeight: "600",
+
+    marginBottom: 14,
   },
 
   description: {
-    fontSize: 14,
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
+
     lineHeight: 20,
   },
 
   empty: {
     alignItems: "center",
-    paddingVertical: 40,
+
+    paddingHorizontal: 30,
+    paddingVertical: 50,
+  },
+
+  emptyIcon: {
+    width: 48,
+    height: 48,
+
+    borderRadius: 24,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: colors.primaryLight,
+
+    marginBottom: 14,
   },
 
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 8,
+    ...typography.h3,
+
+    fontSize: 19,
+    lineHeight: 25,
+
+    color: colors.text,
+
+    textAlign: "center",
+
+    marginBottom: 7,
   },
 
   emptyText: {
-    fontSize: 14,
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
+
     textAlign: "center",
+
+    lineHeight: 20,
   },
 
   errorContainer: {
     flex: 1,
+
     alignItems: "center",
     justifyContent: "center",
+
+    backgroundColor: colors.background,
   },
 
   errorText: {
-    fontSize: 16,
+    ...typography.bodySmall,
+
+    color: colors.textSecondary,
   },
 });

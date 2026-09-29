@@ -8,9 +8,21 @@ import {
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { RootStackParamList } from "../types/navigation";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Database,
+  FileText,
+  LockKeyhole,
+  Share2,
+} from "lucide-react-native";
+
+import type { RootStackParamList } from "../types/navigation";
+
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
 
 export default function PrivacyScreen() {
   const navigation =
@@ -25,9 +37,12 @@ export default function PrivacyScreen() {
       >
         <TouchableOpacity
           style={styles.backButton}
+          activeOpacity={0.7}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backIcon}>←</Text>
+          <ArrowLeft size={20} color={colors.text} strokeWidth={1.8} />
+
+          <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
         <View style={styles.header}>
@@ -39,8 +54,27 @@ export default function PrivacyScreen() {
           </Text>
         </View>
 
+        <View style={styles.infoCard}>
+          <View style={styles.infoIcon}>
+            <LockKeyhole size={23} color={colors.primary} strokeWidth={1.8} />
+          </View>
+
+          <Text style={styles.infoText}>
+            Esta política descreve como os dados são tratados nesta versão do
+            Tryple.
+          </Text>
+        </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>1. Dados armazenados</Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <Database size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionNumber}>01</Text>
+
+            <Text style={styles.sectionTitle}>Dados armazenados</Text>
+          </View>
 
           <Text style={styles.text}>
             Para o funcionamento das funcionalidades de conta, o Tryple pode
@@ -54,10 +88,20 @@ export default function PrivacyScreen() {
           </Text>
         </View>
 
+        <View style={styles.divider} />
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            2. Como os dados são utilizados
-          </Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <FileText size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionNumber}>02</Text>
+
+            <Text style={styles.sectionTitle}>
+              Como os dados são utilizados
+            </Text>
+          </View>
 
           <Text style={styles.text}>
             Os dados são utilizados para permitir o acesso à conta, manter as
@@ -66,8 +110,18 @@ export default function PrivacyScreen() {
           </Text>
         </View>
 
+        <View style={styles.divider} />
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>3. Armazenamento</Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <LockKeyhole size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionNumber}>03</Text>
+
+            <Text style={styles.sectionTitle}>Armazenamento</Text>
+          </View>
 
           <Text style={styles.text}>
             Nesta versão do Tryple, os dados são armazenados localmente no
@@ -75,8 +129,18 @@ export default function PrivacyScreen() {
           </Text>
         </View>
 
+        <View style={styles.divider} />
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>4. Compartilhamento</Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <Share2 size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionNumber}>04</Text>
+
+            <Text style={styles.sectionTitle}>Compartilhamento</Text>
+          </View>
 
           <Text style={styles.text}>
             Nesta versão do aplicativo, os dados cadastrados pelo usuário não
@@ -84,8 +148,18 @@ export default function PrivacyScreen() {
           </Text>
         </View>
 
+        <View style={styles.divider} />
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>5. Alterações</Text>
+          <View style={styles.sectionHeading}>
+            <View style={styles.sectionIcon}>
+              <AlertCircle size={19} color={colors.primary} strokeWidth={1.8} />
+            </View>
+
+            <Text style={styles.sectionNumber}>05</Text>
+
+            <Text style={styles.sectionTitle}>Alterações</Text>
+          </View>
 
           <Text style={styles.text}>
             Esta política poderá ser atualizada conforme novas funcionalidades e
@@ -102,7 +176,7 @@ export default function PrivacyScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EDEDED",
+    backgroundColor: colors.background,
   },
 
   container: {
@@ -110,23 +184,22 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 40,
   },
 
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#FFFFFF",
+    alignSelf: "flex-start",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
+    gap: 7,
+    marginBottom: 42,
   },
 
-  backIcon: {
-    fontSize: 25,
+  backText: {
+    ...typography.bodySmall,
+    color: colors.text,
   },
 
   header: {
@@ -134,41 +207,96 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "700",
+    ...typography.h1,
+    fontSize: 34,
+    lineHeight: 40,
+    color: colors.text,
+    marginBottom: 10,
   },
 
   subtitle: {
-    marginTop: 8,
-    fontSize: 16,
+    ...typography.body,
+    color: colors.textSecondary,
     lineHeight: 23,
-    color: "#666666",
+  },
+
+  infoCard: {
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: colors.primaryLight,
+    marginBottom: 30,
+  },
+
+  infoIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.background,
+    marginBottom: 14,
+  },
+
+  infoText: {
+    ...typography.h3,
+    fontSize: 18,
+    lineHeight: 26,
+    color: colors.primary,
   },
 
   section: {
-    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 2,
+  },
+
+  sectionHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+
+  sectionIcon: {
+    width: 36,
+    height: 36,
     borderRadius: 18,
-    padding: 20,
-    marginBottom: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primaryLight,
+    marginRight: 9,
+  },
+
+  sectionNumber: {
+    ...typography.caption,
+    fontSize: 11,
+    fontWeight: "700",
+    color: colors.textSecondary,
+    marginRight: 8,
   },
 
   sectionTitle: {
+    flex: 1,
+    ...typography.h3,
     fontSize: 19,
-    fontWeight: "700",
-    marginBottom: 10,
+    lineHeight: 25,
+    color: colors.text,
   },
 
   text: {
-    fontSize: 15,
-    lineHeight: 23,
-    color: "#444444",
-    marginBottom: 10,
+    ...typography.body,
+    color: colors.textSecondary,
+    lineHeight: 24,
+    marginBottom: 12,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: 26,
   },
 
   version: {
+    ...typography.caption,
     textAlign: "center",
-    marginTop: 10,
-    fontSize: 13,
-    color: "#888888",
+    color: colors.textSecondary,
+    marginTop: 30,
   },
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import {
   Alert,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -9,10 +10,17 @@ import {
   View,
 } from "react-native";
 
+import {
+  AlertCircle,
+  Check,
+  Eye,
+  EyeOff,
+  X,
+  ArrowLeft,
+} from "lucide-react-native";
+
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-import { Eye, EyeOff } from "lucide-react-native";
 
 import type { RouteProp } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
@@ -20,6 +28,8 @@ import { useRoute } from "@react-navigation/native";
 import type { RootStackParamList } from "../types/navigation";
 
 import { loginUser, registerUser } from "../data/auth";
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
 
 export default function AuthScreen() {
   const navigation =
@@ -28,6 +38,7 @@ export default function AuthScreen() {
   const route = useRoute<RouteProp<RootStackParamList, "Auth">>();
 
   const [isLogin, setIsLogin] = useState(route.params?.mode !== "register");
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -36,15 +47,52 @@ export default function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  type AuthModal = {
+    type: "warning" | "success" | "error";
+    title: string;
+    message: string;
+    actionText: string;
+    onAction: () => void;
+  };
+
+  const [authModal, setAuthModal] = useState<AuthModal | null>(null);
+
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Atenção", "Preencha o e-mail e a senha.");
+      setAuthModal({
+        type: "warning",
+        title: "Atenção",
+        message: "Preencha o e-mail e a senha.",
+        actionText: "Entendi",
+        onAction: () => setAuthModal(null),
+      });
       return;
     }
 
     if (!isLogin && !name.trim()) {
-      Alert.alert("Atenção", "Digite seu nome.");
+      setAuthModal({
+        type: "warning",
+        title: "Atenção",
+        message: "Digite seu nome.",
+        actionText: "Entendi",
+        onAction: () => setAuthModal(null),
+      });
       return;
+    }
+
+    if (!isLogin) {
+      const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+      if (!emailIsValid) {
+        setAuthModal({
+          type: "warning",
+          title: "E-mail inválido",
+          message: "Digite um endereço de e-mail válido.",
+          actionText: "Entendi",
+          onAction: () => setAuthModal(null),
+        });
+        return;
+      }
     }
 
     try {
@@ -53,15 +101,18 @@ export default function AuthScreen() {
       if (isLogin) {
         await loginUser(email.trim(), password);
 
-        Alert.alert("Login realizado", "Você entrou na sua conta.", [
-          {
-            text: "Continuar",
-            onPress: () =>
-              navigation.navigate("Main", {
-                screen: "Home",
-              }),
+        setAuthModal({
+          type: "success",
+          title: "Login realizado",
+          message: "Você entrou na sua conta.",
+          actionText: "Continuar",
+          onAction: () => {
+            setAuthModal(null);
+            navigation.navigate("Main", {
+              screen: "Home",
+            });
           },
-        ]);
+        });
       } else {
         await registerUser({
           name: name.trim(),
@@ -69,15 +120,18 @@ export default function AuthScreen() {
           password,
         });
 
-        Alert.alert("Conta criada", "Sua conta foi criada com sucesso.", [
-          {
-            text: "Continuar",
-            onPress: () =>
-              navigation.navigate("Main", {
-                screen: "Home",
-              }),
+        setAuthModal({
+          type: "success",
+          title: "Conta criada",
+          message: "Sua conta foi criada com sucesso.",
+          actionText: "Continuar",
+          onAction: () => {
+            setAuthModal(null);
+            navigation.navigate("Main", {
+              screen: "Home",
+            });
           },
-        ]);
+        });
       }
     } catch (error) {
       const message =
@@ -85,7 +139,13 @@ export default function AuthScreen() {
           ? error.message
           : "Não foi possível concluir a operação.";
 
-      Alert.alert("Não foi possível continuar", message);
+      setAuthModal({
+        type: "error",
+        title: "Não foi possível continuar",
+        message,
+        actionText: "Entendi",
+        onAction: () => setAuthModal(null),
+      });
     } finally {
       setLoading(false);
     }
@@ -108,7 +168,8 @@ export default function AuthScreen() {
           activeOpacity={0.7}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backArrow}>‹</Text>
+          <ArrowLeft size={20} color={colors.text} strokeWidth={1.8} />
+
           <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
@@ -159,9 +220,13 @@ export default function AuthScreen() {
             activeOpacity={0.7}
           >
             {showPassword ? (
-              <EyeOff size={20} color="#666" />
+              <EyeOff
+                size={20}
+                color={colors.textSecondary}
+                strokeWidth={1.8}
+              />
             ) : (
-              <Eye size={20} color="#666" />
+              <Eye size={20} color={colors.textSecondary} strokeWidth={1.8} />
             )}
           </TouchableOpacity>
         </View>
@@ -192,6 +257,56 @@ export default function AuthScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {authModal && (
+        <Modal
+          visible
+          transparent
+          animationType="fade"
+          statusBarTranslucent
+          onRequestClose={() => setAuthModal(null)}
+        >
+          <View style={styles.authModalOverlay}>
+            <View style={styles.authModal}>
+              <View style={styles.authModalHeader}>
+                <View style={styles.authModalIcon}>
+                  {authModal.type === "success" ? (
+                    <Check size={22} color={colors.primary} strokeWidth={2.2} />
+                  ) : (
+                    <AlertCircle
+                      size={22}
+                      color={colors.primary}
+                      strokeWidth={2}
+                    />
+                  )}
+                </View>
+
+                <TouchableOpacity
+                  style={styles.authModalClose}
+                  activeOpacity={0.7}
+                  onPress={() => setAuthModal(null)}
+                >
+                  <X size={19} color={colors.textSecondary} strokeWidth={1.8} />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.authModalTitle}>{authModal.title}</Text>
+
+              <Text style={styles.authModalMessage}>{authModal.message}</Text>
+
+              <TouchableOpacity
+                style={styles.authModalButton}
+                activeOpacity={0.8}
+                onPress={authModal.onAction}
+              >
+                <Text style={styles.authModalButtonText}>
+                  {authModal.actionText}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -199,7 +314,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F4EE",
+    backgroundColor: colors.background,
   },
 
   content: {
@@ -209,70 +324,74 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 40,
-  },
-
-  backArrow: {
-    fontSize: 30,
-    color: "#252525",
-    marginRight: 5,
+    gap: 7,
+    marginBottom: 42,
   },
 
   backText: {
-    fontSize: 14,
-    color: "#555555",
+    ...typography.bodySmall,
+    color: colors.text,
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "700",
-    color: "#252525",
+    ...typography.h1,
+    fontSize: 34,
+    lineHeight: 40,
+    color: colors.text,
     marginBottom: 10,
   },
 
   description: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#666666",
-    marginBottom: 30,
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    lineHeight: 21,
+    marginBottom: 28,
     maxWidth: 340,
   },
 
   input: {
     height: 54,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
     paddingHorizontal: 16,
-    fontSize: 14,
-    color: "#252525",
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...typography.bodySmall,
+    color: colors.text,
     marginBottom: 12,
   },
 
   passwordContainer: {
     height: 54,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 14,
+    borderRadius: 16,
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
     marginBottom: 12,
   },
 
   passwordInput: {
     flex: 1,
-    fontSize: 14,
-    color: "#252525",
+    paddingVertical: 0,
+    ...typography.bodySmall,
+    color: colors.text,
   },
 
   primaryButton: {
     height: 54,
-    borderRadius: 14,
-    backgroundColor: "#252525",
+    borderRadius: 27,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
+    backgroundColor: colors.primary,
+    marginTop: 10,
   },
 
   primaryButtonDisabled: {
@@ -280,27 +399,108 @@ const styles = StyleSheet.create({
   },
 
   primaryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
+    ...typography.button,
+    color: colors.white,
   },
 
   switchContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+    marginTop: 24,
     gap: 5,
   },
 
   switchText: {
+    ...typography.caption,
     fontSize: 13,
-    color: "#666666",
+    color: colors.textSecondary,
   },
 
   switchButton: {
+    ...typography.caption,
     fontSize: 13,
-    fontWeight: "700",
-    color: "#252525",
+    fontWeight: "600",
+    color: colors.primary,
+  },
+
+  authModalOverlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    backgroundColor: "rgba(35, 35, 35, 0.42)",
+  },
+
+  authModal: {
+    width: "100%",
+    maxWidth: 360,
+    padding: 24,
+    borderRadius: 26,
+    backgroundColor: colors.background,
+  },
+
+  authModalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+
+  authModalIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primaryLight,
+  },
+
+  authModalIconText: {
+    fontSize: 23,
+    fontWeight: "600",
+    color: colors.primary,
+  },
+
+  authModalClose: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
+  },
+
+  authModalCloseText: {
+    fontSize: 25,
+    lineHeight: 27,
+    fontWeight: "300",
+    color: colors.textSecondary,
+  },
+
+  authModalTitle: {
+    ...typography.h2,
+    color: colors.text,
+    marginBottom: 8,
+  },
+
+  authModalMessage: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    lineHeight: 21,
+    marginBottom: 22,
+  },
+
+  authModalButton: {
+    height: 50,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primary,
+  },
+
+  authModalButtonText: {
+    ...typography.button,
+    color: colors.white,
   },
 });

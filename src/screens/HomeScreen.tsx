@@ -9,6 +9,9 @@ import {
   View,
 } from "react-native";
 
+import { colors } from "../theme/colors";
+import { typography } from "../theme/typography";
+
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -137,62 +140,71 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EDEDED",
+    backgroundColor: colors.background,
   },
 
   header: {
+    marginTop: 45,
     paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 24,
+    paddingTop: 40,
+    paddingBottom: 0,
   },
 
   greeting: {
-    fontSize: 28,
-    fontWeight: "bold",
+    ...typography.h1,
+    color: colors.text,
+    includeFontPadding: true,
+    paddingVertical: 8,
   },
 
   subtitle: {
-    fontSize: 15,
-    marginTop: 6,
+    ...typography.bodySmall,
+    marginTop: 8,
+    color: colors.textSecondary,
   },
 
   section: {
-    marginTop: 10,
+    marginTop: 20,
     gap: 20,
   },
 
   sectionTitle: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    fontSize: 22,
-    fontWeight: "bold",
+    includeFontPadding: true,
+    paddingVertical: 8,
+    ...typography.h2,
+    color: colors.text,
   },
 
   filters: {
     paddingHorizontal: 20,
+    paddingTop: 8,
     gap: 10,
   },
 
   filter: {
     paddingHorizontal: 16,
-    paddingVertical: 9,
+    paddingVertical: 10,
+
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: "#D9D9D9",
+    borderColor: colors.border,
   },
 
   filterSelected: {
-    backgroundColor: "#252525",
-    borderColor: "#252525",
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
 
   filterText: {
-    fontSize: 14,
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
 
   filterTextSelected: {
-    color: "#FFFFFF",
+    color: colors.white,
     fontWeight: "600",
   },
 
@@ -200,6 +212,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 12,
     paddingBottom: 30,
+    paddingTop: 10,
   },
 
   empty: {
@@ -209,6 +222,7 @@ const styles = StyleSheet.create({
   },
 
   emptyText: {
-    fontSize: 15,
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
 });
