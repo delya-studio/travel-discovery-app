@@ -2,13 +2,12 @@ import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { typography } from "../theme/typography";
-import { colors } from "../theme/colors";
 
 import { hasCompletedWelcome } from "../data/auth";
 import type { RootStackParamList } from "../types/navigation";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { typography } from "../theme/typography";
+import { colors } from "../theme/colors";
 
 type SplashNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -17,10 +16,12 @@ export default function SplashScreen() {
 
   useEffect(() => {
     const checkWelcome = async () => {
-      const hasSeenWelcome = await AsyncStorage.getItem("@tryple_welcome_seen");
+      const completed = await hasCompletedWelcome();
 
-      if (hasSeenWelcome === "true") {
-        navigation.replace("Main", { screen: "Home" });
+      if (completed) {
+        navigation.replace("Main", {
+          screen: "Home",
+        });
       } else {
         navigation.replace("Welcome");
       }

@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
   itemName: {
     ...typography.h3,
     fontSize: 18,
-    lineHeight: 23,
+    lineHeight: 28,
     color: colors.text,
   },
 

@@ -262,6 +262,7 @@ const styles = StyleSheet.create({
     ...typography.destination,
     color: colors.text,
     marginBottom: 5,
+    lineHeight: 48,
   },
 
   locationRow: {

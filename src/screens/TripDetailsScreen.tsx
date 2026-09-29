@@ -1004,7 +1004,7 @@ const styles = StyleSheet.create({
     ...typography.h2,
 
     fontSize: 25,
-    lineHeight: 31,
+    lineHeight: 38,
 
     color: colors.text,
   },
@@ -1280,7 +1280,7 @@ const styles = StyleSheet.create({
 
     fontWeight: "600",
 
-    lineHeight: 20,
+    lineHeight: 24,
     marginBottom: 4,
   },
 

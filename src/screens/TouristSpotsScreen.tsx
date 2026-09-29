@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     ...typography.h3,
 
     fontSize: 22,
-    lineHeight: 27,
+    lineHeight: 32,
 
     color: colors.text,
 

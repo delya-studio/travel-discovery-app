@@ -303,9 +303,14 @@ export default function DestinationScreen() {
           {activeSection === "bestTime" && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Melhor época</Text>
-
-              <Text style={styles.bestTime}>{destination.bestTimeToVisit}</Text>
-              <Text style={styles.bestTimeDesc}>{destination.toVisitDesc}</Text>
+              <View style={styles.bestTimeCard}>
+                <Text style={styles.bestTime}>
+                  {destination.bestTimeToVisit}
+                </Text>
+                <Text style={styles.bestTimeDesc}>
+                  {destination.toVisitDesc}
+                </Text>
+              </View>
             </View>
           )}
 
@@ -477,7 +482,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h1,
     fontSize: 34,
-    lineHeight: 40,
+    lineHeight: 52,
     color: colors.text,
     marginBottom: 3,
     marginTop: 28,
@@ -504,7 +509,7 @@ const styles = StyleSheet.create({
     ...typography.h3,
     fontSize: 22,
 
-    lineHeight: 26,
+    lineHeight: 42,
     color: colors.text,
   },
 
@@ -593,7 +598,7 @@ const styles = StyleSheet.create({
   touristSpotName: {
     ...typography.h3,
     fontSize: 18,
-    lineHeight: 23,
+    lineHeight: 32,
     color: colors.text,
     marginTop: 13,
     paddingHorizontal: 7,
@@ -620,21 +625,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
 
+  bestTimeCard: {
+    minHeight: 170,
+    marginTop: 18,
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: "center",
+  },
+
   bestTime: {
     ...typography.body,
-    color: colors.textSecondary,
+    color: colors.primaryMedium,
     lineHeight: 24,
-    marginTop: 10,
   },
 
   bestTimeDesc: {
+    marginTop: 18,
     ...typography.bodySmall,
     color: colors.textSecondary,
   },
 
   climateCard: {
     minHeight: 170,
-    marginTop: 12,
+    marginTop: 18,
     padding: 20,
     borderRadius: 22,
     backgroundColor: colors.primaryLight,

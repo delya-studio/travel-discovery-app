@@ -7,13 +7,18 @@ export const touristSpots: TouristSpot[] = [
     name: "Jardim Botânico",
     destinationId: "curitiba",
     location: "Curitiba — Paraná",
-    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
+    image: require("../../assets/imgs/Curitiba/JardimBotanico/pexels-guilherme-stecanella-173739360-20052850.jpg"),
     description:
-      "Um dos cartões-postais de Curitiba, conhecido pelos jardins e pela famosa estufa de vidro.",
-    category: "Natureza",
-    openingHours: "06:00 às 20:00",
+      "Um dos principais cartões-postais de Curitiba, o Jardim Botânico se destaca pela natureza e pela famosa estufa de ferro e vidro, que abriga espécies vegetais da Mata Atlântica. O espaço também oferece áreas para caminhada e contemplação.",
+    category: "Natureza e paisagem",
+    openingHours: "06h às 19h30",
     price: "Gratuito",
-    gallery: [],
+    duration: "Variável",
+    gallery: [
+      require("../../assets/imgs/Curitiba/JardimBotanico/pexels-leonardodourado-17081895.jpg"),
+      require("../../assets/imgs/Curitiba/JardimBotanico/pexels-lud-araujo-94538248-9200051.jpg"),
+      require("../../assets/imgs/Curitiba/JardimBotanico/pexels-viniciusvieirafotografia-34174715.jpg"),
+    ],
   },
 
   {
@@ -21,229 +26,206 @@ export const touristSpots: TouristSpot[] = [
     name: "Museu Oscar Niemeyer",
     destinationId: "curitiba",
     location: "Curitiba — Paraná",
-    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
+    image: require("../../assets/imgs/Curitiba/MuseuOscarNiemeyer/pexels-paulofreitas-12673270.jpg"),
     description:
-      "Museu dedicado às artes visuais, arquitetura, design e cultura.",
-    category: "Cultura",
-    openingHours: "10:00 às 18:00",
-    price: "A partir de R$ 15",
-    gallery: [],
-  },
-
-  {
-    id: "3",
-    name: "Ópera de Arame",
-    destinationId: "curitiba",
-    location: "Curitiba — Paraná",
-    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
-    description:
-      "Espaço cultural cercado pela natureza e conhecido por sua estrutura metálica.",
-    category: "Cultura",
-    openingHours: "10:00 às 18:00",
-    price: "Gratuito",
-    gallery: [],
+      "Um dos principais espaços culturais de Curitiba, o Museu Oscar Niemeyer reúne exposições de artes visuais, arquitetura e design. Conhecido como “Museu do Olho”, destaca-se também pela arquitetura do edifício projetado por Oscar Niemeyer.",
+    category: "Arte e cultura",
+    openingHours: "Terça a domingo, das 10h às 17h30",
+    price:
+      "R$ 36,00 (inteira) | R$ 18,00 (meia-entrada) \n *Pode variar o valor*",
+    duration: "Tempo de visitação de 2 a 3 horas",
+    gallery: [
+      require("../../assets/imgs/Curitiba/MuseuOscarNiemeyer/pexels-katsuhina-travels-18227517.jpg"),
+      require("../../assets/imgs/Curitiba/MuseuOscarNiemeyer/pexels-eliezer-fernandes-515183518-36172452.jpg"),
+    ],
   },
 
   // FOZ DO IGUAÇU
   {
-    id: "4",
+    id: "3",
     name: "Cataratas do Iguaçu",
     destinationId: "foz-do-iguacu",
     location: "Foz do Iguaçu — Paraná",
-    image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5",
+    image: require("../../assets/imgs/FozdoIguacu/pexels-rodrigo-menezes-363900771-31833569.jpg"),
     description:
-      "Um dos maiores conjuntos de quedas-d'água do mundo, cercado por uma área de preservação.",
+      "Uma das principais atrações de Foz do Iguaçu, as Cataratas impressionam pela grandiosidade das quedas da água e pela paisagem natural ao redor. Localizadas no Parque Nacional do Iguaçu, são um dos grandes destaques para quem visita a região.",
     category: "Natureza",
-    openingHours: "09:00 às 16:00",
-    price: "A partir de R$ 100",
-    gallery: [],
+    openingHours:
+      "Segunda a sexta - 9h às 16h \n Sábados e domingos - 8h30 às 16h \n Permanência no parque até 17h30",
+    price:
+      "Ingresso obrigatório — compra antecipada com escolha de dia e horário.",
+    duration:
+      "Variável — depende do ritmo e das atividades realizadas no parque.",
+    gallery: [
+      require("../../assets/imgs/FozdoIguacu/pexels-drethousand-8571241.jpg"),
+      require("../../assets/imgs/FozdoIguacu/pexels-jairo-beiza-2079653575-29848509.jpg"),
+    ],
   },
 
   {
-    id: "5",
+    id: "4",
     name: "Parque das Aves",
     destinationId: "foz-do-iguacu",
     location: "Foz do Iguaçu — Paraná",
-    image: "https://images.unsplash.com/photo-1444464666168-49d633b86797",
+    image: require("../../assets/imgs/FozdoIguacu/pexels-luri-36839858.jpg"),
     description:
-      "Parque dedicado à conservação de aves e à educação ambiental.",
-    category: "Natureza",
-    openingHours: "08:30 às 16:30",
-    price: "A partir de R$ 60",
+      "O Parque das Aves oferece uma experiência imersiva em meio à Mata Atlântica, com viveiros onde é possível observar de perto diversas espécies de aves. O espaço também atua na conservação e no acolhimento de animais resgatados.",
+    category: "Natureza e vida selvagem",
+    openingHours: "Todos os dias, das 8h30 às 16h30.",
+    price:
+      "R$ 110,00 — valor informado pela Secretaria de Turismo de Foz do Iguaçu.",
+    duration: "Média de 3 horas",
     gallery: [],
   },
 
   // SÃO PAULO
   {
-    id: "6",
+    id: "5",
     name: "Avenida Paulista",
     destinationId: "sao-paulo",
     location: "São Paulo — São Paulo",
-    image: "https://images.unsplash.com/photo-1543059080-f9b1272213d5",
+    image: require("../../assets/imgs/SaoPaulo/pexels-lucaspezeta-2592319.jpg"),
     description:
-      "Uma das principais avenidas de São Paulo, cercada por museus, centros culturais, lojas e restaurantes.",
-    category: "Cidade",
+      "Um dos principais símbolos de São Paulo, a Avenida Paulista reúne museus, centros culturais, restaurantes, lojas e espaços de lazer, sendo um dos lugares mais movimentados e diversos da cidade.",
+    category: "Cidade, cultura e lazer",
     openingHours: "Aberto 24 horas",
     price: "Gratuito",
+    duration: "2 a 4 horas",
     gallery: [],
   },
 
+  // SÃO PAULO CAMPOS DO JORDÃO
   {
-    id: "7",
-    name: "Museu de Arte de São Paulo",
-    destinationId: "sao-paulo",
-    location: "São Paulo — São Paulo",
-    image: "https://images.unsplash.com/photo-1561214115-f2f134cc4912",
+    id: "6",
+    name: "Capivari",
+    destinationId: "campos-do-jordao",
+    location: "Campos do Jordão — São Paulo",
+    image: require("../../assets/imgs/CamposDoJordao/pexels-manoel-junior-664863191-18030380.jpg"),
     description:
-      "Um dos museus de arte mais importantes do Brasil, localizado na Avenida Paulista.",
-    category: "Cultura",
-    openingHours: "10:00 às 18:00",
-    price: "A partir de R$ 30",
+      "O centro turístico de Campos do Jordão, conhecido pelo charme de sua arquitetura em estilo europeu, reúne restaurantes, lojas e diversas opções de lazer. O bairro ganha ainda mais movimento durante o inverno e é um dos principais pontos para conhecer a atmosfera da cidade.",
+    category: "Cultura e lazer",
+    openingHours: "Consulte no local",
+    price: "Variável",
+    duration: "Variável",
     gallery: [],
   },
 
   // RIO DE JANEIRO
   {
-    id: "8",
-    name: "Cristo Redentor",
+    id: "7",
+    name: "Pão de Açúcar",
     destinationId: "rio-de-janeiro",
-    location: "Rio de Janeiro — Rio de Janeiro",
-    image: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325",
+    location: "Urca — Rio de Janeiro",
+    image: require("../../assets/imgs/RioDeJaneiro/pexels-rodrigo-menezes-363900771-17218514.jpg"),
     description:
-      "Um dos principais símbolos do Rio de Janeiro, localizado no alto do Morro do Corcovado.",
-    category: "Cultura",
-    openingHours: "08:00 às 18:00",
-    price: "A partir de R$ 90",
+      "Um dos principais cartões-postais do Rio de Janeiro, o Pão de Açúcar oferece uma vista panorâmica da Baía de Guanabara, das praias e de diversos pontos da cidade. A visita inclui o passeio de teleférico entre a Praia Vermelha, o Morro da Urca e o Pão de Açúcar.",
+    category: "Natureza e paisagem",
+    openingHours: "08:30 às 21:00",
+    price: "A partir de R$ 160",
+    duration: "2 a 3 horas",
+    gallery: [
+      require("../../assets/imgs/RioDeJaneiro/pexels-bruno-almeida-1423946545-26589702.jpg"),
+    ],
+  },
+
+  // FLORIANÓPOLIS
+  {
+    id: "8",
+    name: "Praia da Joaquina",
+    destinationId: "florianopolis",
+    location: "Joaquina — Florianópolis, Santa Catarina",
+    image: require("../../assets/imgs/Florianopolis/pexels-clayton-de-araujo-414048915-15202803.jpg"),
+    description:
+      "Uma das praias mais conhecidas de Florianópolis, a Joaquina se destaca pelo surfe, pelas dunas e pelas atividades esportivas. O local também é conhecido pelo nascer do sol e possui restaurantes e paradores.",
+    category: "Praia e natureza",
+    openingHours: "Aberto 24 horas",
+    price: "Gratuito",
+    duration: "Variável",
     gallery: [],
   },
 
   {
     id: "9",
-    name: "Pão de Açúcar",
-    destinationId: "rio-de-janeiro",
-    location: "Rio de Janeiro — Rio de Janeiro",
-    image: "https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f",
-    description:
-      "Complexo turístico conhecido pelos seus morros e pela vista panorâmica da cidade.",
-    category: "Natureza",
-    openingHours: "08:00 às 21:00",
-    price: "A partir de R$ 185",
-    gallery: [],
-  },
-
-  // FLORIANÓPOLIS
-  {
-    id: "10",
-    name: "Praia da Joaquina",
-    destinationId: "florianopolis",
-    location: "Florianópolis — Santa Catarina",
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    description:
-      "Uma das praias mais conhecidas de Florianópolis, cercada por dunas e natureza.",
-    category: "Praia",
-    openingHours: "Aberto 24 horas",
-    price: "Gratuito",
-    gallery: [],
-  },
-
-  {
-    id: "11",
     name: "Lagoa da Conceição",
     destinationId: "florianopolis",
-    location: "Florianópolis — Santa Catarina",
-    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    location: "Lagoa da Conceição — Florianópolis, Santa Catarina",
+    image: require("../../assets/imgs/Florianopolis/pexels-vivian-venhasque-484321734-35350010.jpg"),
     description:
-      "Região conhecida pelas paisagens naturais, restaurantes e atividades ao ar livre.",
-    category: "Natureza",
+      "Uma das principais atrações de Florianópolis, a Lagoa da Conceição reúne paisagens naturais, esportes náuticos, trilhas, gastronomia, cultura e música.",
+    category: "Natureza e lazer",
     openingHours: "Aberto 24 horas",
     price: "Gratuito",
-    gallery: [],
+    duration: "Variável",
+    gallery: [
+      require("../../assets/imgs/Florianopolis/pexels-matheus-de-moraes-gugelmim-38060312-30182267.jpg"),
+      require("../../assets/imgs/Florianopolis/pexels-brnncmps-13424578.jpg"),
+    ],
   },
 
   // SALVADOR
   {
-    id: "12",
+    id: "10",
     name: "Pelourinho",
     destinationId: "salvador",
-    location: "Salvador — Bahia",
-    image: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99",
+    location: "Centro Histórico — Salvador, Bahia",
+    image: require("../../assets/imgs/salvador/pexels-leonardodourado-12989844.jpg"),
     description:
-      "Centro histórico conhecido pela arquitetura colonial, cultura e importância histórica.",
-    category: "Cultura",
-    openingHours: "Aberto 24 horas",
+      "Um dos principais símbolos de Salvador, o Pelourinho reúne patrimônio histórico, manifestações culturais, arte e espaços ligados à história e à cultura afro-brasileira.",
+    category: "Cultura e história",
+    openingHours: "Todos os dias",
     price: "Gratuito",
+    duration: "3 horas",
+    gallery: [
+      require("../../assets/imgs/salvador/pexels-marcelo-gonzalez-1141370437-31792604.jpg"),
+      require("../../assets/imgs/salvador/pexels-matheus-albuquerque-1819283-6472045.jpg"),
+    ],
+  },
+
+  {
+    id: "11",
+    name: "Farol da Barra",
+    destinationId: "salvador",
+    location: "Barra — Salvador, Bahia",
+    image: require("../../assets/imgs/salvador/pexels-rodrigo-kokama-538969654-32639802.jpg"),
+    description:
+      "Um dos principais cartões-postais de Salvador, o Farol da Barra está instalado no histórico Forte de Santo Antônio da Barra. O local abriga o Museu Náutico da Bahia e oferece vista para o Oceano Atlântico e a Baía de Todos os Santos.",
+    category: "História e cultura",
+    openingHours: "Consulte o horário atualizado",
+    price: "R$ 20,00 inteira / R$ 10,00 meia",
+    duration: "Variável",
+    gallery: [
+      require("../../assets/imgs/salvador/pexels-almir-reis-1982745319-29354790.jpg"),
+    ],
+  },
+
+  // RECIFE
+  {
+    id: "12",
+    name: "Praia de Boa Viagem",
+    destinationId: "recife",
+    location: "Boa Viagem — Recife, Pernambuco",
+    image: require("../../assets/imgs/recife/pexels-vikeph-21314188.jpg"),
+    description:
+      "Um dos principais cartões-postais do Recife, a Praia de Boa Viagem possui uma extensa orla com piscinas naturais, ciclovia, áreas de lazer, quiosques, hotéis e restaurantes.",
+    category: "Praia e lazer",
+    openingHours: "Acesso público",
+    price: "Gratuito",
+    duration: "Variável",
     gallery: [],
   },
 
   {
     id: "13",
-    name: "Farol da Barra",
-    destinationId: "salvador",
-    location: "Salvador — Bahia",
-    image: "https://images.unsplash.com/photo-1596395819057-e37f55a8516a",
-    description:
-      "Um dos cartões-postais de Salvador, localizado em uma região de praias e belas paisagens.",
-    category: "Praia",
-    openingHours: "06:00 às 18:00",
-    price: "Gratuito",
-    gallery: [],
-  },
-
-  // RECIFE
-  {
-    id: "14",
-    name: "Praia de Boa Viagem",
-    destinationId: "recife",
-    location: "Recife — Pernambuco",
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    description:
-      "Uma das praias mais conhecidas de Recife, com extensa faixa de areia e orla urbana.",
-    category: "Praia",
-    openingHours: "Aberto 24 horas",
-    price: "Gratuito",
-    gallery: [],
-  },
-
-  {
-    id: "15",
     name: "Marco Zero",
     destinationId: "recife",
-    location: "Recife — Pernambuco",
-    image: "https://images.unsplash.com/photo-1531058020387-3be344556be6",
+    location: "Recife Antigo — Recife, Pernambuco",
+    image: require("../../assets/imgs/recife/pexels-vikeph-17488159.jpg"),
     description:
-      "Um dos principais pontos de encontro do Recife Antigo e referência cultural da cidade.",
-    category: "Cultura",
+      "Um dos espaços mais simbólicos do Recife e porta de entrada do Recife Antigo, o Marco Zero reúne patrimônio histórico, paisagem urbana, convivência e grandes eventos culturais.",
+    category: "Cultura e história",
     openingHours: "Aberto 24 horas",
-    price: "Gratuito",
-    gallery: [],
-  },
-
-  // GRAMADO
-  {
-    id: "16",
-    name: "Lago Negro",
-    destinationId: "gramado",
-    location: "Gramado — Rio Grande do Sul",
-    image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-    description:
-      "Parque cercado por natureza, com lago, árvores e caminhos para passeios.",
-    category: "Natureza",
-    openingHours: "08:30 às 18:00",
-    price: "Gratuito",
-    gallery: [],
-  },
-
-  {
-    id: "17",
-    name: "Rua Coberta",
-    destinationId: "gramado",
-    location: "Gramado — Rio Grande do Sul",
-    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
-    description:
-      "Um dos locais mais movimentados de Gramado, cercado por restaurantes, lojas e eventos.",
-    category: "Cidade",
-    openingHours: "Aberto 24 horas",
-    price: "Gratuito",
-    gallery: [],
+    price: "Acesso livre",
+    duration: "Variável",
+    gallery: [require("../../assets/imgs/recife/pexels-japy-16229750.jpg")],
   },
 ];

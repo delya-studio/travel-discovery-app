@@ -221,6 +221,11 @@ export default function TouristSpotScreen() {
               <Text style={styles.infoLabel}>Entrada</Text>
               <Text style={styles.infoValue}>{touristSpot.price}</Text>
             </View>
+
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Duração</Text>
+              <Text style={styles.infoValue}>{touristSpot.duration}</Text>
+            </View>
           </View>
 
           {touristSpot.gallery.length > 0 && (
@@ -235,7 +240,7 @@ export default function TouristSpotScreen() {
                 {touristSpot.gallery.map((image, index) => (
                   <Image
                     key={index}
-                    source={{ uri: image }}
+                    source={image}
                     style={styles.galleryImage}
                   />
                 ))}
@@ -561,7 +566,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h1,
     fontSize: 34,
-    lineHeight: 40,
+    lineHeight: 45,
     color: colors.text,
     marginBottom: 4,
     marginTop: 28,
@@ -600,8 +605,8 @@ const styles = StyleSheet.create({
   // INFORMAÇÕES
 
   infoContainer: {
-    flexDirection: "row",
-    gap: 8,
+    flexDirection: "column",
+    gap: 18,
 
     marginTop: 28,
   },
@@ -655,8 +660,8 @@ const styles = StyleSheet.create({
   },
 
   galleryImage: {
-    width: 220,
-    height: 145,
+    width: 230,
+    height: 265,
 
     borderRadius: 20,
   },

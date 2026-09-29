@@ -9,5 +9,6 @@ export type TouristSpot = {
   category: string;
   openingHours: string;
   price: string;
-  gallery: string[];
+  duration: string;
+  gallery: ImageSourcePropType[];
 };

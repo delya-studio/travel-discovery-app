@@ -8,7 +8,7 @@ export const typography = {
   h1: {
     fontFamily: "NarnoorBold",
     fontSize: 32,
-    lineHeight: 48,
+    lineHeight: 52,
   },
 
   h2: {
@@ -26,7 +26,7 @@ export const typography = {
   destination: {
     fontFamily: "NarnoorBold",
     fontSize: 30,
-    lineHeight: 40,
+    lineHeight: 46,
   },
 
   body: {
@@ -51,6 +51,6 @@ export const typography = {
   caption: {
     fontFamily: "Narnoor",
     fontSize: 15,
-    lineHeight: 20,
+    lineHeight: 24,
   },
 };

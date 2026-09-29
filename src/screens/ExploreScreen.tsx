@@ -333,6 +333,7 @@ const styles = StyleSheet.create({
   activeFilterText: {
     ...typography.caption,
     color: colors.primary,
+    marginTop: -6,
   },
 
   list: {
