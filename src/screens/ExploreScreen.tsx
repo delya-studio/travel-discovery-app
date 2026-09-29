@@ -154,7 +154,7 @@ export default function ExploreScreen() {
               })
             }
           >
-            <Image source={{ uri: destination.image }} style={styles.image} />
+            <Image source={destination.image} style={styles.image} />
 
             <View style={styles.cardContent}>
               <Text style={styles.destinationName}>{destination.name}</Text>

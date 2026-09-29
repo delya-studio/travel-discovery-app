@@ -8,6 +8,8 @@ import { colors } from "../theme/colors";
 import { hasCompletedWelcome } from "../data/auth";
 import type { RootStackParamList } from "../types/navigation";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 type SplashNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SplashScreen() {
@@ -15,7 +17,13 @@ export default function SplashScreen() {
 
   useEffect(() => {
     const checkWelcome = async () => {
-      navigation.replace("Welcome");
+      const hasSeenWelcome = await AsyncStorage.getItem("@tryple_welcome_seen");
+
+      if (hasSeenWelcome === "true") {
+        navigation.replace("Main", { screen: "Home" });
+      } else {
+        navigation.replace("Welcome");
+      }
     };
 
     const timer = setTimeout(checkWelcome, 2000);

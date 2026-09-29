@@ -7,7 +7,7 @@ export const touristSpots: TouristSpot[] = [
     name: "Jardim Botânico",
     destinationId: "curitiba",
     location: "Curitiba — Paraná",
-    image: "https://images.unsplash.com/photo-1500534623283-312aade485b7",
+    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
     description:
       "Um dos cartões-postais de Curitiba, conhecido pelos jardins e pela famosa estufa de vidro.",
     category: "Natureza",
@@ -21,7 +21,7 @@ export const touristSpots: TouristSpot[] = [
     name: "Museu Oscar Niemeyer",
     destinationId: "curitiba",
     location: "Curitiba — Paraná",
-    image: "https://images.unsplash.com/photo-1564399579883-451a5d44ec08",
+    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
     description:
       "Museu dedicado às artes visuais, arquitetura, design e cultura.",
     category: "Cultura",
@@ -238,7 +238,7 @@ export const touristSpots: TouristSpot[] = [
     name: "Rua Coberta",
     destinationId: "gramado",
     location: "Gramado — Rio Grande do Sul",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
+    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
     description:
       "Um dos locais mais movimentados de Gramado, cercado por restaurantes, lojas e eventos.",
     category: "Cidade",

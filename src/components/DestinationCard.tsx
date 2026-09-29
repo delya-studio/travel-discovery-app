@@ -84,7 +84,7 @@ export default function DestinationCard({
     <>
       <Pressable style={styles.card} onPress={onPress}>
         <ImageBackground
-          source={{ uri: destination.image }}
+          source={destination.image}
           style={styles.image}
           imageStyle={styles.imageRadius}
         >

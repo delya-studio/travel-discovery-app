@@ -457,12 +457,7 @@ export default function TripDetailsScreen() {
                       <Text style={styles.orderText}>{index + 1}</Text>
                     </View>
 
-                    <Image
-                      source={{
-                        uri: touristSpot.image,
-                      }}
-                      style={styles.image}
-                    />
+                    <Image source={touristSpot.image} style={styles.image} />
 
                     <View style={styles.itemInfo}>
                       <Text style={styles.itemName} numberOfLines={2}>
@@ -535,12 +530,7 @@ export default function TripDetailsScreen() {
                       })
                     }
                   >
-                    <Image
-                      source={{
-                        uri: touristSpot.image,
-                      }}
-                      style={styles.image}
-                    />
+                    <Image source={touristSpot.image} style={styles.image} />
 
                     <View style={styles.itemInfo}>
                       <Text style={styles.itemName} numberOfLines={2}>
@@ -650,9 +640,7 @@ export default function TripDetailsScreen() {
                       onPress={() => addSpotToCurrentDay(touristSpot.id)}
                     >
                       <Image
-                        source={{
-                          uri: touristSpot.image,
-                        }}
+                        source={touristSpot.image}
                         style={styles.spotImage}
                       />
 

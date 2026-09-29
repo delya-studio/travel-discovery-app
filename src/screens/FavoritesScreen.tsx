@@ -105,10 +105,7 @@ export default function FavoritesScreen() {
                     }
                   >
                     <View>
-                      <Image
-                        source={{ uri: destination.image }}
-                        style={styles.image}
-                      />
+                      <Image source={destination.image} style={styles.image} />
 
                       <View style={styles.favoriteIcon}>
                         <Heart
@@ -160,10 +157,7 @@ export default function FavoritesScreen() {
                     }
                   >
                     <View>
-                      <Image
-                        source={{ uri: spot.image }}
-                        style={styles.image}
-                      />
+                      <Image source={spot.image} style={styles.image} />
 
                       <View style={styles.favoriteIcon}>
                         <Heart

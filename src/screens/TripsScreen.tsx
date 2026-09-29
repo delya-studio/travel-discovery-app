@@ -268,9 +268,7 @@ export default function TripsScreen() {
                       return (
                         <View key={item.id} style={styles.item}>
                           <Image
-                            source={{
-                              uri: touristSpot.image,
-                            }}
+                            source={touristSpot.image}
                             style={styles.image}
                           />
 

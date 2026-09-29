@@ -170,10 +170,7 @@ export default function TouristSpotScreen() {
             <ArrowLeft size={21} color={colors.text} strokeWidth={1.9} />
           </TouchableOpacity>
 
-          <Image
-            source={{ uri: touristSpot.image }}
-            style={styles.touristSpotImage}
-          ></Image>
+          <Image source={touristSpot.image} style={styles.touristSpotImage} />
         </View>
         <View style={styles.content}>
           <Text style={styles.title}>{touristSpot.name}</Text>

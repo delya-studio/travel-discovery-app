@@ -9,10 +9,11 @@ export const destinations: Destination[] = [
     continent: "América do Sul",
     latitude: -25.4284,
     longitude: -49.2733,
-    image: "https://images.unsplash.com/photo-1619546952812-520e98064a52",
+    image: require("../../assets/imgs/Curitiba/pexels-natalierodrigues-38921374.jpg"),
     description:
       "Curitiba combina áreas verdes, arquitetura, cultura e uma das melhores estruturas urbanas do Brasil.",
     bestTimeToVisit: "Março a maio e setembro a novembro",
+    toVisitDesc: "bbb",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -32,6 +33,7 @@ export const destinations: Destination[] = [
     description:
       "Foz do Iguaçu é conhecida pelas Cataratas do Iguaçu e pela grande diversidade de natureza e atrações.",
     bestTimeToVisit: "Março a maio e setembro a outubro",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -51,6 +53,7 @@ export const destinations: Destination[] = [
     description:
       "São Paulo reúne gastronomia, cultura, arte, arquitetura e uma enorme variedade de experiências.",
     bestTimeToVisit: "Abril a junho e agosto a outubro",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -70,6 +73,7 @@ export const destinations: Destination[] = [
     description:
       "O Rio de Janeiro reúne praias, natureza, cultura e alguns dos pontos turísticos mais conhecidos do país.",
     bestTimeToVisit: "Maio a outubro",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -89,6 +93,7 @@ export const destinations: Destination[] = [
     description:
       "Florianópolis combina praias, natureza, trilhas e uma atmosfera litorânea marcante.",
     bestTimeToVisit: "Dezembro a março",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -108,6 +113,7 @@ export const destinations: Destination[] = [
     description:
       "Salvador se destaca pela história, cultura, música, gastronomia e arquitetura colonial.",
     bestTimeToVisit: "Dezembro a março",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -127,6 +133,7 @@ export const destinations: Destination[] = [
     description:
       "Recife reúne praias, história, cultura e diferentes atrações espalhadas pela cidade.",
     bestTimeToVisit: "Setembro a março",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",
@@ -146,6 +153,7 @@ export const destinations: Destination[] = [
     description:
       "Gramado é conhecida pela arquitetura, gastronomia, natureza e clima característico da Serra Gaúcha.",
     bestTimeToVisit: "Abril a agosto",
+    toVisitDesc: "",
     weather: {
       temperature: 0,
       condition: "Indisponível",

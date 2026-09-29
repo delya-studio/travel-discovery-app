@@ -150,10 +150,7 @@ export default function DestinationScreen() {
             <ArrowLeft size={21} color={colors.text} strokeWidth={1.9} />
           </TouchableOpacity>
 
-          <Image
-            source={{ uri: destination.image }}
-            style={styles.destinationImage}
-          ></Image>
+          <Image source={destination.image} style={styles.destinationImage} />
 
           <TouchableOpacity
             style={styles.favoriteButton}
@@ -272,7 +269,7 @@ export default function DestinationScreen() {
                 {destinationSpots.map((spot) => (
                   <View key={spot.id} style={styles.touristCard}>
                     <Image
-                      source={{ uri: spot.image }}
+                      source={spot.image}
                       style={styles.touristSpotImage}
                     />
 
@@ -308,6 +305,7 @@ export default function DestinationScreen() {
               <Text style={styles.sectionTitle}>Melhor época</Text>
 
               <Text style={styles.bestTime}>{destination.bestTimeToVisit}</Text>
+              <Text style={styles.bestTimeDesc}>{destination.toVisitDesc}</Text>
             </View>
           )}
 
@@ -627,6 +625,11 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     lineHeight: 24,
     marginTop: 10,
+  },
+
+  bestTimeDesc: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
   },
 
   climateCard: {

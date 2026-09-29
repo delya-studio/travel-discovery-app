@@ -129,7 +129,7 @@ export default function TouristSpotsScreen() {
                 })
               }
             >
-              <Image source={{ uri: spot.image }} style={styles.image} />
+              <Image source={spot.image} style={styles.image} />
 
               <View style={styles.cardContent}>
                 <Text style={styles.name}>{spot.name}</Text>
