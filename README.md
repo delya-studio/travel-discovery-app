@@ -48,7 +48,7 @@ A versão Android do Tryple pode ser instalada diretamente pelo APK:
 
 **[⬇️ Baixar Tryple v1.0.0](https://github.com/delya-studio/travel-discovery-app/releases/tag/v1.0.0)**
 
-Na página do Release, baixe o arquivo `Tryple.apk` em **Assets**.
+Na página do Release, baixe o arquivo `Tryple.apk` em **Assets** para iniciar o download. Após o download, abra o arquivo no dispositivo Android e siga as instruções de instalação.
 
 > Não é necessário instalar Node.js, npm ou Expo para utilizar o aplicativo Android. Essas ferramentas são necessárias apenas para executar o projeto a partir do código-fonte.
 
